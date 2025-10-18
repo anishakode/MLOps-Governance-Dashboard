@@ -1,0 +1,729 @@
+{
+  "generated_at": "2025-10-10T15:38:28.452325",
+  "window": {
+    "start": "2025-09-10T15:38:28.411877",
+    "end": "2025-10-10T15:38:28.411877"
+  },
+  "model": {
+    "id": 1,
+    "name": "fraud_detector",
+    "description": "demo",
+    "version": "1.0.0",
+    "stage": "production",
+    "status": "active",
+    "created_at": "2025-10-10T13:21:53.343180",
+    "updated_at": "2025-10-10T15:37:30.830793",
+    "model_metadata": {}
+  },
+  "approvals": [
+    {
+      "id": 3,
+      "model_id": 1,
+      "target": "production",
+      "status": "approved",
+      "requested_by": "alice",
+      "justification": "with waiver",
+      "created_at": "2025-10-10T15:36:21.590591",
+      "decisions": [
+        {
+          "by": "bob",
+          "decision": "approved",
+          "note": "",
+          "at": "2025-10-10T15:37:11.097552"
+        },
+        {
+          "by": "carol",
+          "decision": "approved",
+          "note": "",
+          "at": "2025-10-10T15:37:30.686736"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "model_id": 1,
+      "target": "production",
+      "status": "pending",
+      "requested_by": "alice",
+      "justification": "with waiver",
+      "created_at": "2025-10-10T15:36:13.151348",
+      "decisions": []
+    },
+    {
+      "id": 1,
+      "model_id": 1,
+      "target": "production",
+      "status": "rejected",
+      "requested_by": "alice",
+      "justification": "promote",
+      "created_at": "2025-10-10T15:28:18.440924",
+      "decisions": [
+        {
+          "by": "bob",
+          "decision": "approved",
+          "note": "",
+          "at": "2025-10-10T15:28:28.163781"
+        },
+        {
+          "by": "carol",
+          "decision": "approved",
+          "note": "",
+          "at": "2025-10-10T15:28:37.837599"
+        }
+      ]
+    }
+  ],
+  "audit_log": [
+    {
+      "id": 28,
+      "action": "STAGE_CHANGED",
+      "model_id": 1,
+      "actor": "carol",
+      "details": {
+        "new_stage": "production",
+        "approval_id": 3
+      },
+      "created_at": "2025-10-10T15:37:30.853032"
+    },
+    {
+      "id": 27,
+      "action": "POLICY_WAIVER_USED",
+      "model_id": 1,
+      "actor": "carol",
+      "details": {
+        "approval_id": 3,
+        "waivers": [
+          {
+            "rule": "block_on_alerts",
+            "waiver_id": 1
+          }
+        ],
+        "target": "production",
+        "policy_hash": "aa9626ec552d6e9a98b2285bd91268604a6289d292e7b0fe5869f305334c1e2e"
+      },
+      "created_at": "2025-10-10T15:37:30.787290"
+    },
+    {
+      "id": 26,
+      "action": "DECIDE_PROMOTION",
+      "model_id": 1,
+      "actor": "carol",
+      "details": {
+        "approval_id": 3,
+        "decision": "approved",
+        "note": "",
+        "approvals": 2,
+        "needed": 2
+      },
+      "created_at": "2025-10-10T15:37:30.690371"
+    },
+    {
+      "id": 25,
+      "action": "DECIDE_PROMOTION",
+      "model_id": 1,
+      "actor": "bob",
+      "details": {
+        "approval_id": 3,
+        "decision": "approved",
+        "note": "",
+        "approvals": 1,
+        "needed": 2
+      },
+      "created_at": "2025-10-10T15:37:11.107564"
+    },
+    {
+      "id": 24,
+      "action": "REQUEST_PROMOTION",
+      "model_id": 1,
+      "actor": "alice",
+      "details": {
+        "target": "production",
+        "justification": "with waiver",
+        "approval_id": 3
+      },
+      "created_at": "2025-10-10T15:36:21.600675"
+    },
+    {
+      "id": 23,
+      "action": "REQUEST_PROMOTION",
+      "model_id": 1,
+      "actor": "alice",
+      "details": {
+        "target": "production",
+        "justification": "with waiver",
+        "approval_id": 2
+      },
+      "created_at": "2025-10-10T15:36:13.177157"
+    },
+    {
+      "id": 22,
+      "action": "WAIVER_GRANTED",
+      "model_id": 1,
+      "actor": "cto",
+      "details": {
+        "waiver_id": 1,
+        "rule": "block_on_alerts",
+        "target": "production",
+        "expires_at": "2025-10-11T16:29:18"
+      },
+      "created_at": "2025-10-10T15:29:18.543475"
+    },
+    {
+      "id": 21,
+      "action": "POLICY_BLOCKED",
+      "model_id": 1,
+      "actor": "carol",
+      "details": {
+        "approval_id": 1,
+        "reasons": [
+          "Open alerts in last 24h with severities ['high', 'medium']"
+        ],
+        "target": "production",
+        "policy_hash": "aa9626ec552d6e9a98b2285bd91268604a6289d292e7b0fe5869f305334c1e2e"
+      },
+      "created_at": "2025-10-10T15:28:37.964565"
+    },
+    {
+      "id": 20,
+      "action": "DECIDE_PROMOTION",
+      "model_id": 1,
+      "actor": "carol",
+      "details": {
+        "approval_id": 1,
+        "decision": "approved",
+        "note": "",
+        "approvals": 2,
+        "needed": 2
+      },
+      "created_at": "2025-10-10T15:28:37.841070"
+    },
+    {
+      "id": 19,
+      "action": "DECIDE_PROMOTION",
+      "model_id": 1,
+      "actor": "bob",
+      "details": {
+        "approval_id": 1,
+        "decision": "approved",
+        "note": "",
+        "approvals": 1,
+        "needed": 2
+      },
+      "created_at": "2025-10-10T15:28:28.201123"
+    },
+    {
+      "id": 18,
+      "action": "REQUEST_PROMOTION",
+      "model_id": 1,
+      "actor": "alice",
+      "details": {
+        "target": "production",
+        "justification": "promote",
+        "approval_id": 1
+      },
+      "created_at": "2025-10-10T15:28:18.486449"
+    },
+    {
+      "id": 17,
+      "action": "ALERT_SUPPRESSED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "reason": "duplicate_within_cooldown",
+        "cooldown_min": 30,
+        "feature": "age_bucket",
+        "severity": "high"
+      },
+      "created_at": "2025-10-10T15:27:26.591987"
+    },
+    {
+      "id": 16,
+      "action": "DRIFT_EVALUATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "psi": 0.48236322737000514,
+        "severity": "high",
+        "metric_id": 11
+      },
+      "created_at": "2025-10-10T15:27:26.572277"
+    },
+    {
+      "id": 15,
+      "action": "SET_BASELINE",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "metric_id": 10
+      },
+      "created_at": "2025-10-10T15:27:17.798831"
+    },
+    {
+      "id": 14,
+      "action": "SET_BASELINE",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "metric_id": 9
+      },
+      "created_at": "2025-10-10T15:13:51.077826"
+    },
+    {
+      "id": 13,
+      "action": "ALERT_CREATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "alert_id": 4,
+        "severity": "high",
+        "feature": "age_bucket"
+      },
+      "created_at": "2025-10-10T15:05:57.714889"
+    },
+    {
+      "id": 12,
+      "action": "DRIFT_EVALUATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "psi": 0.48236322737000514,
+        "severity": "high",
+        "metric_id": 8
+      },
+      "created_at": "2025-10-10T15:05:57.589335"
+    },
+    {
+      "id": 11,
+      "action": "ALERT_CREATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "alert_id": 3,
+        "severity": "high",
+        "feature": "age_bucket2"
+      },
+      "created_at": "2025-10-10T14:29:48.123042"
+    },
+    {
+      "id": 10,
+      "action": "DRIFT_EVALUATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket2",
+        "psi": 0.48236322737000514,
+        "severity": "high",
+        "metric_id": 7
+      },
+      "created_at": "2025-10-10T14:29:48.084994"
+    },
+    {
+      "id": 9,
+      "action": "SET_BASELINE",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket2",
+        "metric_id": 6
+      },
+      "created_at": "2025-10-10T14:29:32.564767"
+    },
+    {
+      "id": 8,
+      "action": "ALERT_SUPPRESSED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "reason": "duplicate_within_cooldown",
+        "cooldown_min": 30,
+        "feature": "age_bucket",
+        "severity": "high"
+      },
+      "created_at": "2025-10-10T14:27:54.299663"
+    },
+    {
+      "id": 7,
+      "action": "DRIFT_EVALUATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "psi": 0.48236322737000514,
+        "severity": "high",
+        "metric_id": 5
+      },
+      "created_at": "2025-10-10T14:27:54.224201"
+    },
+    {
+      "id": 6,
+      "action": "ALERT_CREATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "alert_id": 2,
+        "severity": "high",
+        "feature": "age_bucket"
+      },
+      "created_at": "2025-10-10T14:20:02.936223"
+    },
+    {
+      "id": 5,
+      "action": "DRIFT_EVALUATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "psi": 0.48236322737000514,
+        "severity": "high",
+        "metric_id": 4
+      },
+      "created_at": "2025-10-10T14:20:02.901180"
+    },
+    {
+      "id": 4,
+      "action": "SET_BASELINE",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "metric_id": 3
+      },
+      "created_at": "2025-10-10T14:19:28.490174"
+    },
+    {
+      "id": 3,
+      "action": "ALERT_CREATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "alert_id": 1,
+        "severity": "high",
+        "feature": "age_bucket"
+      },
+      "created_at": "2025-10-10T13:22:35.917713"
+    },
+    {
+      "id": 2,
+      "action": "DRIFT_EVALUATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "psi": 0.48236322737000514,
+        "severity": "high",
+        "metric_id": 2
+      },
+      "created_at": "2025-10-10T13:22:35.873391"
+    },
+    {
+      "id": 1,
+      "action": "SET_BASELINE",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "metric_id": 1
+      },
+      "created_at": "2025-10-10T13:22:15.808571"
+    }
+  ],
+  "metrics": {
+    "baselines": [
+      {
+        "id": 10,
+        "feature": "age_bucket",
+        "method": "psi_baseline",
+        "value": null,
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ]
+        },
+        "created_at": "2025-10-10T15:27:17.774242"
+      },
+      {
+        "id": 9,
+        "feature": "age_bucket",
+        "method": "psi_baseline",
+        "value": null,
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ]
+        },
+        "created_at": "2025-10-10T15:13:51.064001"
+      },
+      {
+        "id": 3,
+        "feature": "age_bucket",
+        "method": "psi_baseline",
+        "value": null,
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ]
+        },
+        "created_at": "2025-10-10T14:19:28.462582"
+      },
+      {
+        "id": 1,
+        "feature": "age_bucket",
+        "method": "psi_baseline",
+        "value": null,
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ]
+        },
+        "created_at": "2025-10-10T13:22:15.792183"
+      },
+      {
+        "id": 6,
+        "feature": "age_bucket2",
+        "method": "psi_baseline",
+        "value": null,
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ]
+        },
+        "created_at": "2025-10-10T14:29:32.557344"
+      }
+    ],
+    "psi_evaluations": [
+      {
+        "id": 11,
+        "feature": "age_bucket",
+        "method": "psi_eval",
+        "value": "0.482363",
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ],
+          "actual": [
+            0.02,
+            0.08,
+            0.2,
+            0.35,
+            0.35
+          ],
+          "severity": "high"
+        },
+        "created_at": "2025-10-10T15:27:26.567266"
+      },
+      {
+        "id": 8,
+        "feature": "age_bucket",
+        "method": "psi_eval",
+        "value": "0.482363",
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ],
+          "actual": [
+            0.02,
+            0.08,
+            0.2,
+            0.35,
+            0.35
+          ],
+          "severity": "high"
+        },
+        "created_at": "2025-10-10T15:05:57.507595"
+      },
+      {
+        "id": 7,
+        "feature": "age_bucket2",
+        "method": "psi_eval",
+        "value": "0.482363",
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ],
+          "actual": [
+            0.02,
+            0.08,
+            0.2,
+            0.35,
+            0.35
+          ],
+          "severity": "high"
+        },
+        "created_at": "2025-10-10T14:29:48.074999"
+      },
+      {
+        "id": 5,
+        "feature": "age_bucket",
+        "method": "psi_eval",
+        "value": "0.482363",
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ],
+          "actual": [
+            0.02,
+            0.08,
+            0.2,
+            0.35,
+            0.35
+          ],
+          "severity": "high"
+        },
+        "created_at": "2025-10-10T14:27:54.182060"
+      },
+      {
+        "id": 4,
+        "feature": "age_bucket",
+        "method": "psi_eval",
+        "value": "0.482363",
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ],
+          "actual": [
+            0.02,
+            0.08,
+            0.2,
+            0.35,
+            0.35
+          ],
+          "severity": "high"
+        },
+        "created_at": "2025-10-10T14:20:02.892957"
+      },
+      {
+        "id": 2,
+        "feature": "age_bucket",
+        "method": "psi_eval",
+        "value": "0.482363",
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ],
+          "actual": [
+            0.02,
+            0.08,
+            0.2,
+            0.35,
+            0.35
+          ],
+          "severity": "high"
+        },
+        "created_at": "2025-10-10T13:22:35.864814"
+      }
+    ]
+  },
+  "alerts": [
+    {
+      "id": 4,
+      "type": "drift",
+      "severity": "high",
+      "message": "Major drift detected on feature 'age_bucket' (PSI=0.482)",
+      "details": {
+        "psi": 0.48236322737000514,
+        "feature": "age_bucket",
+        "metric_id": 8
+      },
+      "status": "open",
+      "created_at": "2025-10-10T15:05:57.700500",
+      "resolved_at": null
+    },
+    {
+      "id": 3,
+      "type": "drift",
+      "severity": "high",
+      "message": "Major drift detected on feature 'age_bucket2' (PSI=0.482)",
+      "details": {
+        "psi": 0.48236322737000514,
+        "feature": "age_bucket2",
+        "metric_id": 7
+      },
+      "status": "open",
+      "created_at": "2025-10-10T14:29:48.106477",
+      "resolved_at": null
+    },
+    {
+      "id": 2,
+      "type": "drift",
+      "severity": "high",
+      "message": "Major drift detected on feature 'age_bucket' (PSI=0.482)",
+      "details": {
+        "psi": 0.48236322737000514,
+        "feature": "age_bucket",
+        "metric_id": 4
+      },
+      "status": "open",
+      "created_at": "2025-10-10T14:20:02.928044",
+      "resolved_at": null
+    },
+    {
+      "id": 1,
+      "type": "drift",
+      "severity": "high",
+      "message": "Major drift detected on feature 'age_bucket' (PSI=0.482)",
+      "details": {
+        "psi": 0.48236322737000514,
+        "feature": "age_bucket",
+        "metric_id": 2
+      },
+      "status": "open",
+      "created_at": "2025-10-10T13:22:35.908838",
+      "resolved_at": null
+    }
+  ],
+  "summary": {
+    "open_alerts": 4,
+    "high_alerts": 4,
+    "evaluations_in_window": 6,
+    "approvals_in_window": 3,
+    "policy_hash": "aa9626ec552d6e9a98b2285bd91268604a6289d292e7b0fe5869f305334c1e2e"
+  }
+}

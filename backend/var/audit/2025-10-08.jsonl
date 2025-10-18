@@ -1,0 +1,24 @@
+{"action": "DEBUG_FILE_SINK", "ts": "2025-10-08T20:11:36.640084+00:00"}
+{"id": 27, "action": "REQUEST_PROMOTION", "model_id": 1, "actor": "alice", "details": {"target": "production", "justification": "try prod", "approval_id": 1}, "created_at": "2025-10-08T22:00:19.580360"}
+{"id": 28, "action": "DECIDE_PROMOTION", "model_id": 1, "actor": "bob", "details": {"approval_id": 1, "decision": "approved", "note": "", "approvals": 1, "needed": 2}, "created_at": "2025-10-08T22:04:17.727344"}
+{"id": 29, "action": "DECIDE_PROMOTION", "model_id": 1, "actor": "carol", "details": {"approval_id": 1, "decision": "approved", "note": "", "approvals": 2, "needed": 2}, "created_at": "2025-10-08T22:04:31.939336"}
+{"id": 30, "action": "POLICY_BLOCKED", "model_id": 1, "actor": "carol", "details": {"approval_id": 1, "reasons": ["Open alerts in last 24h with severities ['high', 'medium']"], "target": "production"}, "created_at": "2025-10-08T22:04:31.968749"}
+{"id": 31, "action": "ALERT_RESOLVED", "model_id": 1, "actor": null, "details": {"alert_id": 1}, "created_at": "2025-10-08T22:07:42.063559"}
+{"id": 32, "action": "REQUEST_PROMOTION", "model_id": 1, "actor": "alice", "details": {"target": "production", "justification": "alert resolved", "approval_id": 2}, "created_at": "2025-10-08T22:08:05.717503"}
+{"id": 33, "action": "DECIDE_PROMOTION", "model_id": 1, "actor": "bob", "details": {"approval_id": 2, "decision": "approved", "note": "", "approvals": 1, "needed": 2}, "created_at": "2025-10-08T22:09:21.787946"}
+{"id": 34, "action": "DECIDE_PROMOTION", "model_id": 1, "actor": "carol", "details": {"approval_id": 2, "decision": "approved", "note": "", "approvals": 2, "needed": 2}, "created_at": "2025-10-08T22:09:57.010734"}
+{"id": 35, "action": "POLICY_BLOCKED", "model_id": 1, "actor": "carol", "details": {"approval_id": 2, "reasons": ["Open alerts in last 24h with severities ['high', 'medium']"], "target": "production"}, "created_at": "2025-10-08T22:09:57.041559"}
+{"id": 36, "action": "SET_BASELINE", "model_id": 1, "actor": null, "details": {"feature": "age_bucket", "metric_id": 16}, "created_at": "2025-10-08T23:53:19.015926"}
+{"id": 37, "action": "DRIFT_EVALUATED", "model_id": 1, "actor": null, "details": {"feature": "age_bucket", "psi": 0.48236322737000514, "severity": "high", "metric_id": 17}, "created_at": "2025-10-08T23:53:28.529118"}
+{"id": 38, "action": "ALERT_CREATED", "model_id": 1, "actor": null, "details": {"alert_id": 10, "severity": "high", "feature": "age_bucket"}, "created_at": "2025-10-08T23:53:28.566363"}
+{"id": 39, "action": "REQUEST_PROMOTION", "model_id": 1, "actor": "alice", "details": {"target": "production", "justification": "try prod", "approval_id": 3}, "created_at": "2025-10-08T23:53:51.797293"}
+{"id": 40, "action": "DECIDE_PROMOTION", "model_id": 1, "actor": "bob", "details": {"approval_id": 3, "decision": "approved", "note": "", "approvals": 1, "needed": 2}, "created_at": "2025-10-08T23:54:15.855822"}
+{"id": 41, "action": "DECIDE_PROMOTION", "model_id": 1, "actor": "carol", "details": {"approval_id": 3, "decision": "approved", "note": "", "approvals": 2, "needed": 2}, "created_at": "2025-10-08T23:54:33.372208"}
+{"id": 42, "action": "POLICY_BLOCKED", "model_id": 1, "actor": "carol", "details": {"approval_id": 3, "reasons": ["Open alerts in last 24h with severities ['high', 'medium']"], "target": "production"}, "created_at": "2025-10-08T23:54:33.411892"}
+{"id": 43, "action": "WAIVER_GRANTED", "model_id": 1, "actor": "cto", "details": {"waiver_id": 1, "rule": "block_on_alerts", "target": "production", "expires_at": "2025-10-10T00:55:00"}, "created_at": "2025-10-08T23:55:07.870343"}
+{"id": 44, "action": "REQUEST_PROMOTION", "model_id": 1, "actor": "alice", "details": {"target": "production", "justification": "with waiver", "approval_id": 4}, "created_at": "2025-10-08T23:55:41.220956"}
+{"id": 45, "action": "DECIDE_PROMOTION", "model_id": 1, "actor": "bob", "details": {"approval_id": 4, "decision": "approved", "note": "", "approvals": 1, "needed": 2}, "created_at": "2025-10-08T23:55:58.383979"}
+{"id": 46, "action": "DECIDE_PROMOTION", "model_id": 1, "actor": "carol", "details": {"approval_id": 4, "decision": "approved", "note": "", "approvals": 2, "needed": 2}, "created_at": "2025-10-08T23:56:36.231670"}
+{"id": 47, "action": "POLICY_WAIVER_USED", "model_id": 1, "actor": "carol", "details": {"approval_id": 4, "waivers": [{"rule": "block_on_alerts", "waiver_id": 1}], "target": "production"}, "created_at": "2025-10-08T23:56:36.247978"}
+{"id": 48, "action": "STAGE_CHANGED", "model_id": 1, "actor": "carol", "details": {"new_stage": "production", "approval_id": 4}, "created_at": "2025-10-08T23:56:36.270432"}
+{"id": 49, "action": "REQUEST_PROMOTION", "model_id": 1, "actor": "dave", "details": {"target": "staging", "justification": "sod test", "approval_id": 5}, "created_at": "2025-10-08T23:57:46.863378"}

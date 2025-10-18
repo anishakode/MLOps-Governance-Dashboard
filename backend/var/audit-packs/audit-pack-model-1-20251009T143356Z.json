@@ -1,0 +1,1653 @@
+{
+  "generated_at": "2025-10-09T14:33:56.175188",
+  "window": {
+    "start": "2025-09-09T14:33:56.110433",
+    "end": "2025-10-09T14:33:56.110433"
+  },
+  "model": {
+    "id": 1,
+    "name": "fraud_detector",
+    "description": "demo",
+    "version": "1.0.0",
+    "stage": "production",
+    "status": "active",
+    "created_at": "2025-10-08T15:06:55.744750",
+    "updated_at": "2025-10-09T14:28:27.748788",
+    "model_metadata": {}
+  },
+  "approvals": [
+    {
+      "id": 9,
+      "model_id": 1,
+      "target": "production",
+      "status": "approved",
+      "requested_by": "alice",
+      "justification": "try prod",
+      "created_at": "2025-10-09T14:27:43.517927",
+      "decisions": [
+        {
+          "by": "bob",
+          "decision": "approved",
+          "note": "",
+          "at": "2025-10-09T14:28:10.917978"
+        },
+        {
+          "by": "carol",
+          "decision": "approved",
+          "note": "",
+          "at": "2025-10-09T14:28:27.691884"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "model_id": 1,
+      "target": "staging",
+      "status": "pending",
+      "requested_by": "dave",
+      "justification": "sod test",
+      "created_at": "2025-10-09T14:21:57.320635",
+      "decisions": []
+    },
+    {
+      "id": 7,
+      "model_id": 1,
+      "target": "production",
+      "status": "approved",
+      "requested_by": "alice",
+      "justification": "with waiver",
+      "created_at": "2025-10-09T14:20:30.685702",
+      "decisions": [
+        {
+          "by": "bob",
+          "decision": "approved",
+          "note": "",
+          "at": "2025-10-09T14:20:51.906236"
+        },
+        {
+          "by": "carol",
+          "decision": "approved",
+          "note": "",
+          "at": "2025-10-09T14:21:10.777854"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "model_id": 1,
+      "target": "production",
+      "status": "approved",
+      "requested_by": "alice",
+      "justification": "try prod",
+      "created_at": "2025-10-09T14:18:50.307364",
+      "decisions": [
+        {
+          "by": "bob",
+          "decision": "approved",
+          "note": "",
+          "at": "2025-10-09T14:19:18.114912"
+        },
+        {
+          "by": "carol",
+          "decision": "approved",
+          "note": "",
+          "at": "2025-10-09T14:19:47.163335"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "model_id": 1,
+      "target": "staging",
+      "status": "pending",
+      "requested_by": "dave",
+      "justification": "sod test",
+      "created_at": "2025-10-08T23:57:46.843978",
+      "decisions": []
+    },
+    {
+      "id": 4,
+      "model_id": 1,
+      "target": "production",
+      "status": "approved",
+      "requested_by": "alice",
+      "justification": "with waiver",
+      "created_at": "2025-10-08T23:55:41.215635",
+      "decisions": [
+        {
+          "by": "bob",
+          "decision": "approved",
+          "note": "",
+          "at": "2025-10-08T23:55:58.382132"
+        },
+        {
+          "by": "carol",
+          "decision": "approved",
+          "note": "",
+          "at": "2025-10-08T23:56:36.228420"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "model_id": 1,
+      "target": "production",
+      "status": "rejected",
+      "requested_by": "alice",
+      "justification": "try prod",
+      "created_at": "2025-10-08T23:53:51.787016",
+      "decisions": [
+        {
+          "by": "bob",
+          "decision": "approved",
+          "note": "",
+          "at": "2025-10-08T23:54:15.850581"
+        },
+        {
+          "by": "carol",
+          "decision": "approved",
+          "note": "",
+          "at": "2025-10-08T23:54:33.369119"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "model_id": 1,
+      "target": "production",
+      "status": "rejected",
+      "requested_by": "alice",
+      "justification": "alert resolved",
+      "created_at": "2025-10-08T22:08:05.704240",
+      "decisions": [
+        {
+          "by": "bob",
+          "decision": "approved",
+          "note": "",
+          "at": "2025-10-08T22:09:21.783215"
+        },
+        {
+          "by": "carol",
+          "decision": "approved",
+          "note": "",
+          "at": "2025-10-08T22:09:57.008121"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "model_id": 1,
+      "target": "production",
+      "status": "rejected",
+      "requested_by": "alice",
+      "justification": "try prod",
+      "created_at": "2025-10-08T22:00:19.536927",
+      "decisions": [
+        {
+          "by": "bob",
+          "decision": "approved",
+          "note": "",
+          "at": "2025-10-08T22:04:17.679438"
+        },
+        {
+          "by": "carol",
+          "decision": "approved",
+          "note": "",
+          "at": "2025-10-08T22:04:31.936446"
+        }
+      ]
+    }
+  ],
+  "audit_log": [
+    {
+      "id": 70,
+      "action": "STAGE_CHANGED",
+      "model_id": 1,
+      "actor": "carol",
+      "details": {
+        "new_stage": "production",
+        "approval_id": 9
+      },
+      "created_at": "2025-10-09T14:28:27.759851"
+    },
+    {
+      "id": 69,
+      "action": "POLICY_WAIVER_USED",
+      "model_id": 1,
+      "actor": "carol",
+      "details": {
+        "approval_id": 9,
+        "waivers": [
+          {
+            "rule": "block_on_alerts",
+            "waiver_id": 3
+          }
+        ],
+        "target": "production"
+      },
+      "created_at": "2025-10-09T14:28:27.735409"
+    },
+    {
+      "id": 68,
+      "action": "DECIDE_PROMOTION",
+      "model_id": 1,
+      "actor": "carol",
+      "details": {
+        "approval_id": 9,
+        "decision": "approved",
+        "note": "",
+        "approvals": 2,
+        "needed": 2
+      },
+      "created_at": "2025-10-09T14:28:27.694212"
+    },
+    {
+      "id": 67,
+      "action": "DECIDE_PROMOTION",
+      "model_id": 1,
+      "actor": "bob",
+      "details": {
+        "approval_id": 9,
+        "decision": "approved",
+        "note": "",
+        "approvals": 1,
+        "needed": 2
+      },
+      "created_at": "2025-10-09T14:28:10.925392"
+    },
+    {
+      "id": 66,
+      "action": "REQUEST_PROMOTION",
+      "model_id": 1,
+      "actor": "alice",
+      "details": {
+        "target": "production",
+        "justification": "try prod",
+        "approval_id": 9
+      },
+      "created_at": "2025-10-09T14:27:43.533487"
+    },
+    {
+      "id": 65,
+      "action": "WAIVER_GRANTED",
+      "model_id": 1,
+      "actor": "cto",
+      "details": {
+        "waiver_id": 3,
+        "rule": "block_on_alerts",
+        "target": "production",
+        "expires_at": "2025-10-10T15:27:14"
+      },
+      "created_at": "2025-10-09T14:27:24.257186"
+    },
+    {
+      "id": 64,
+      "action": "REQUEST_PROMOTION",
+      "model_id": 1,
+      "actor": "dave",
+      "details": {
+        "target": "staging",
+        "justification": "sod test",
+        "approval_id": 8
+      },
+      "created_at": "2025-10-09T14:21:57.343595"
+    },
+    {
+      "id": 63,
+      "action": "STAGE_CHANGED",
+      "model_id": 1,
+      "actor": "carol",
+      "details": {
+        "new_stage": "production",
+        "approval_id": 7
+      },
+      "created_at": "2025-10-09T14:21:10.817883"
+    },
+    {
+      "id": 62,
+      "action": "POLICY_WAIVER_USED",
+      "model_id": 1,
+      "actor": "carol",
+      "details": {
+        "approval_id": 7,
+        "waivers": [
+          {
+            "rule": "block_on_alerts",
+            "waiver_id": 2
+          }
+        ],
+        "target": "production"
+      },
+      "created_at": "2025-10-09T14:21:10.797766"
+    },
+    {
+      "id": 61,
+      "action": "DECIDE_PROMOTION",
+      "model_id": 1,
+      "actor": "carol",
+      "details": {
+        "approval_id": 7,
+        "decision": "approved",
+        "note": "",
+        "approvals": 2,
+        "needed": 2
+      },
+      "created_at": "2025-10-09T14:21:10.780220"
+    },
+    {
+      "id": 60,
+      "action": "DECIDE_PROMOTION",
+      "model_id": 1,
+      "actor": "bob",
+      "details": {
+        "approval_id": 7,
+        "decision": "approved",
+        "note": "",
+        "approvals": 1,
+        "needed": 2
+      },
+      "created_at": "2025-10-09T14:20:51.908752"
+    },
+    {
+      "id": 59,
+      "action": "REQUEST_PROMOTION",
+      "model_id": 1,
+      "actor": "alice",
+      "details": {
+        "target": "production",
+        "justification": "with waiver",
+        "approval_id": 7
+      },
+      "created_at": "2025-10-09T14:20:30.697201"
+    },
+    {
+      "id": 58,
+      "action": "WAIVER_GRANTED",
+      "model_id": 1,
+      "actor": "cto",
+      "details": {
+        "waiver_id": 2,
+        "rule": "block_on_alerts",
+        "target": "production",
+        "expires_at": "2025-10-10T15:19:59"
+      },
+      "created_at": "2025-10-09T14:20:09.078305"
+    },
+    {
+      "id": 57,
+      "action": "STAGE_CHANGED",
+      "model_id": 1,
+      "actor": "carol",
+      "details": {
+        "new_stage": "production",
+        "approval_id": 6
+      },
+      "created_at": "2025-10-09T14:19:47.321306"
+    },
+    {
+      "id": 56,
+      "action": "POLICY_WAIVER_USED",
+      "model_id": 1,
+      "actor": "carol",
+      "details": {
+        "approval_id": 6,
+        "waivers": [
+          {
+            "rule": "block_on_alerts",
+            "waiver_id": 1
+          }
+        ],
+        "target": "production"
+      },
+      "created_at": "2025-10-09T14:19:47.262286"
+    },
+    {
+      "id": 55,
+      "action": "DECIDE_PROMOTION",
+      "model_id": 1,
+      "actor": "carol",
+      "details": {
+        "approval_id": 6,
+        "decision": "approved",
+        "note": "",
+        "approvals": 2,
+        "needed": 2
+      },
+      "created_at": "2025-10-09T14:19:47.168686"
+    },
+    {
+      "id": 54,
+      "action": "DECIDE_PROMOTION",
+      "model_id": 1,
+      "actor": "bob",
+      "details": {
+        "approval_id": 6,
+        "decision": "approved",
+        "note": "",
+        "approvals": 1,
+        "needed": 2
+      },
+      "created_at": "2025-10-09T14:19:18.144426"
+    },
+    {
+      "id": 53,
+      "action": "REQUEST_PROMOTION",
+      "model_id": 1,
+      "actor": "alice",
+      "details": {
+        "target": "production",
+        "justification": "try prod",
+        "approval_id": 6
+      },
+      "created_at": "2025-10-09T14:18:50.337271"
+    },
+    {
+      "id": 52,
+      "action": "ALERT_CREATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "alert_id": 11,
+        "severity": "high",
+        "feature": "age_bucket"
+      },
+      "created_at": "2025-10-09T14:17:51.527898"
+    },
+    {
+      "id": 51,
+      "action": "DRIFT_EVALUATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "psi": 0.48236322737000514,
+        "severity": "high",
+        "metric_id": 19
+      },
+      "created_at": "2025-10-09T14:17:51.495690"
+    },
+    {
+      "id": 50,
+      "action": "SET_BASELINE",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "metric_id": 18
+      },
+      "created_at": "2025-10-09T14:17:30.235434"
+    },
+    {
+      "id": 49,
+      "action": "REQUEST_PROMOTION",
+      "model_id": 1,
+      "actor": "dave",
+      "details": {
+        "target": "staging",
+        "justification": "sod test",
+        "approval_id": 5
+      },
+      "created_at": "2025-10-08T23:57:46.863378"
+    },
+    {
+      "id": 48,
+      "action": "STAGE_CHANGED",
+      "model_id": 1,
+      "actor": "carol",
+      "details": {
+        "new_stage": "production",
+        "approval_id": 4
+      },
+      "created_at": "2025-10-08T23:56:36.270432"
+    },
+    {
+      "id": 47,
+      "action": "POLICY_WAIVER_USED",
+      "model_id": 1,
+      "actor": "carol",
+      "details": {
+        "approval_id": 4,
+        "waivers": [
+          {
+            "rule": "block_on_alerts",
+            "waiver_id": 1
+          }
+        ],
+        "target": "production"
+      },
+      "created_at": "2025-10-08T23:56:36.247978"
+    },
+    {
+      "id": 46,
+      "action": "DECIDE_PROMOTION",
+      "model_id": 1,
+      "actor": "carol",
+      "details": {
+        "approval_id": 4,
+        "decision": "approved",
+        "note": "",
+        "approvals": 2,
+        "needed": 2
+      },
+      "created_at": "2025-10-08T23:56:36.231670"
+    },
+    {
+      "id": 45,
+      "action": "DECIDE_PROMOTION",
+      "model_id": 1,
+      "actor": "bob",
+      "details": {
+        "approval_id": 4,
+        "decision": "approved",
+        "note": "",
+        "approvals": 1,
+        "needed": 2
+      },
+      "created_at": "2025-10-08T23:55:58.383979"
+    },
+    {
+      "id": 44,
+      "action": "REQUEST_PROMOTION",
+      "model_id": 1,
+      "actor": "alice",
+      "details": {
+        "target": "production",
+        "justification": "with waiver",
+        "approval_id": 4
+      },
+      "created_at": "2025-10-08T23:55:41.220956"
+    },
+    {
+      "id": 43,
+      "action": "WAIVER_GRANTED",
+      "model_id": 1,
+      "actor": "cto",
+      "details": {
+        "waiver_id": 1,
+        "rule": "block_on_alerts",
+        "target": "production",
+        "expires_at": "2025-10-10T00:55:00"
+      },
+      "created_at": "2025-10-08T23:55:07.870343"
+    },
+    {
+      "id": 42,
+      "action": "POLICY_BLOCKED",
+      "model_id": 1,
+      "actor": "carol",
+      "details": {
+        "approval_id": 3,
+        "reasons": [
+          "Open alerts in last 24h with severities ['high', 'medium']"
+        ],
+        "target": "production"
+      },
+      "created_at": "2025-10-08T23:54:33.411892"
+    },
+    {
+      "id": 41,
+      "action": "DECIDE_PROMOTION",
+      "model_id": 1,
+      "actor": "carol",
+      "details": {
+        "approval_id": 3,
+        "decision": "approved",
+        "note": "",
+        "approvals": 2,
+        "needed": 2
+      },
+      "created_at": "2025-10-08T23:54:33.372208"
+    },
+    {
+      "id": 40,
+      "action": "DECIDE_PROMOTION",
+      "model_id": 1,
+      "actor": "bob",
+      "details": {
+        "approval_id": 3,
+        "decision": "approved",
+        "note": "",
+        "approvals": 1,
+        "needed": 2
+      },
+      "created_at": "2025-10-08T23:54:15.855822"
+    },
+    {
+      "id": 39,
+      "action": "REQUEST_PROMOTION",
+      "model_id": 1,
+      "actor": "alice",
+      "details": {
+        "target": "production",
+        "justification": "try prod",
+        "approval_id": 3
+      },
+      "created_at": "2025-10-08T23:53:51.797293"
+    },
+    {
+      "id": 38,
+      "action": "ALERT_CREATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "alert_id": 10,
+        "severity": "high",
+        "feature": "age_bucket"
+      },
+      "created_at": "2025-10-08T23:53:28.566363"
+    },
+    {
+      "id": 37,
+      "action": "DRIFT_EVALUATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "psi": 0.48236322737000514,
+        "severity": "high",
+        "metric_id": 17
+      },
+      "created_at": "2025-10-08T23:53:28.529118"
+    },
+    {
+      "id": 36,
+      "action": "SET_BASELINE",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "metric_id": 16
+      },
+      "created_at": "2025-10-08T23:53:19.015926"
+    },
+    {
+      "id": 35,
+      "action": "POLICY_BLOCKED",
+      "model_id": 1,
+      "actor": "carol",
+      "details": {
+        "approval_id": 2,
+        "reasons": [
+          "Open alerts in last 24h with severities ['high', 'medium']"
+        ],
+        "target": "production"
+      },
+      "created_at": "2025-10-08T22:09:57.041559"
+    },
+    {
+      "id": 34,
+      "action": "DECIDE_PROMOTION",
+      "model_id": 1,
+      "actor": "carol",
+      "details": {
+        "approval_id": 2,
+        "decision": "approved",
+        "note": "",
+        "approvals": 2,
+        "needed": 2
+      },
+      "created_at": "2025-10-08T22:09:57.010734"
+    },
+    {
+      "id": 33,
+      "action": "DECIDE_PROMOTION",
+      "model_id": 1,
+      "actor": "bob",
+      "details": {
+        "approval_id": 2,
+        "decision": "approved",
+        "note": "",
+        "approvals": 1,
+        "needed": 2
+      },
+      "created_at": "2025-10-08T22:09:21.787946"
+    },
+    {
+      "id": 32,
+      "action": "REQUEST_PROMOTION",
+      "model_id": 1,
+      "actor": "alice",
+      "details": {
+        "target": "production",
+        "justification": "alert resolved",
+        "approval_id": 2
+      },
+      "created_at": "2025-10-08T22:08:05.717503"
+    },
+    {
+      "id": 31,
+      "action": "ALERT_RESOLVED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "alert_id": 1
+      },
+      "created_at": "2025-10-08T22:07:42.063559"
+    },
+    {
+      "id": 30,
+      "action": "POLICY_BLOCKED",
+      "model_id": 1,
+      "actor": "carol",
+      "details": {
+        "approval_id": 1,
+        "reasons": [
+          "Open alerts in last 24h with severities ['high', 'medium']"
+        ],
+        "target": "production"
+      },
+      "created_at": "2025-10-08T22:04:31.968749"
+    },
+    {
+      "id": 29,
+      "action": "DECIDE_PROMOTION",
+      "model_id": 1,
+      "actor": "carol",
+      "details": {
+        "approval_id": 1,
+        "decision": "approved",
+        "note": "",
+        "approvals": 2,
+        "needed": 2
+      },
+      "created_at": "2025-10-08T22:04:31.939336"
+    },
+    {
+      "id": 28,
+      "action": "DECIDE_PROMOTION",
+      "model_id": 1,
+      "actor": "bob",
+      "details": {
+        "approval_id": 1,
+        "decision": "approved",
+        "note": "",
+        "approvals": 1,
+        "needed": 2
+      },
+      "created_at": "2025-10-08T22:04:17.727344"
+    },
+    {
+      "id": 27,
+      "action": "REQUEST_PROMOTION",
+      "model_id": 1,
+      "actor": "alice",
+      "details": {
+        "target": "production",
+        "justification": "try prod",
+        "approval_id": 1
+      },
+      "created_at": "2025-10-08T22:00:19.580360"
+    },
+    {
+      "id": 26,
+      "action": "ALERT_CREATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "alert_id": 9,
+        "severity": "high",
+        "feature": "age_bucket"
+      },
+      "created_at": "2025-10-08T19:38:45.315659"
+    },
+    {
+      "id": 25,
+      "action": "DRIFT_EVALUATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "psi": 0.48236322737000514,
+        "severity": "high",
+        "metric_id": 15
+      },
+      "created_at": "2025-10-08T19:38:45.272793"
+    },
+    {
+      "id": 24,
+      "action": "SET_BASELINE",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "metric_id": 14
+      },
+      "created_at": "2025-10-08T19:38:34.146663"
+    },
+    {
+      "id": 23,
+      "action": "ALERT_CREATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "alert_id": 8,
+        "severity": "high",
+        "feature": "age_bucket"
+      },
+      "created_at": "2025-10-08T18:46:33.160983"
+    },
+    {
+      "id": 22,
+      "action": "DRIFT_EVALUATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "psi": 0.48236322737000514,
+        "severity": "high",
+        "metric_id": 13
+      },
+      "created_at": "2025-10-08T18:46:33.141288"
+    },
+    {
+      "id": 21,
+      "action": "SET_BASELINE",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "metric_id": 12
+      },
+      "created_at": "2025-10-08T18:46:17.239756"
+    },
+    {
+      "id": 20,
+      "action": "ALERT_CREATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "alert_id": 7,
+        "severity": "high",
+        "feature": "age_bucket"
+      },
+      "created_at": "2025-10-08T18:27:33.770165"
+    },
+    {
+      "id": 19,
+      "action": "DRIFT_EVALUATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "psi": 0.48236322737000514,
+        "severity": "high",
+        "metric_id": 11
+      },
+      "created_at": "2025-10-08T18:27:33.751039"
+    },
+    {
+      "id": 18,
+      "action": "ALERT_CREATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "alert_id": 6,
+        "severity": "high",
+        "feature": "age_bucket"
+      },
+      "created_at": "2025-10-08T18:23:17.486115"
+    },
+    {
+      "id": 17,
+      "action": "DRIFT_EVALUATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "psi": 0.48236322737000514,
+        "severity": "high",
+        "metric_id": 10
+      },
+      "created_at": "2025-10-08T18:23:17.446239"
+    },
+    {
+      "id": 16,
+      "action": "ALERT_CREATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "alert_id": 5,
+        "severity": "high",
+        "feature": "age_bucket"
+      },
+      "created_at": "2025-10-08T18:19:24.753094"
+    },
+    {
+      "id": 15,
+      "action": "DRIFT_EVALUATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "psi": 0.48236322737000514,
+        "severity": "high",
+        "metric_id": 9
+      },
+      "created_at": "2025-10-08T18:19:24.732014"
+    },
+    {
+      "id": 14,
+      "action": "SET_BASELINE",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "metric_id": 8
+      },
+      "created_at": "2025-10-08T18:19:15.838784"
+    },
+    {
+      "id": 13,
+      "action": "ALERT_CREATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "alert_id": 4,
+        "severity": "high",
+        "feature": "age_bucket"
+      },
+      "created_at": "2025-10-08T18:06:02.855796"
+    },
+    {
+      "id": 12,
+      "action": "DRIFT_EVALUATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "psi": 0.48236322737000514,
+        "severity": "high",
+        "metric_id": 7
+      },
+      "created_at": "2025-10-08T18:06:02.833196"
+    },
+    {
+      "id": 11,
+      "action": "ALERT_CREATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "alert_id": 3,
+        "severity": "high",
+        "feature": "age_bucket"
+      },
+      "created_at": "2025-10-08T17:55:58.967767"
+    },
+    {
+      "id": 10,
+      "action": "DRIFT_EVALUATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "psi": 0.48236322737000514,
+        "severity": "high",
+        "metric_id": 6
+      },
+      "created_at": "2025-10-08T17:55:58.942725"
+    },
+    {
+      "id": 9,
+      "action": "SET_BASELINE",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "metric_id": 5
+      },
+      "created_at": "2025-10-08T17:55:50.536409"
+    },
+    {
+      "id": 8,
+      "action": "ALERT_RESOLVED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "alert_id": 1
+      },
+      "created_at": "2025-10-08T17:28:07.752755"
+    },
+    {
+      "id": 7,
+      "action": "ALERT_CREATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "alert_id": 2,
+        "severity": "high",
+        "feature": "age_bucket"
+      },
+      "created_at": "2025-10-08T17:27:20.172917"
+    },
+    {
+      "id": 6,
+      "action": "DRIFT_EVALUATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "psi": 0.48236322737000514,
+        "severity": "high",
+        "metric_id": 4
+      },
+      "created_at": "2025-10-08T17:27:20.155617"
+    },
+    {
+      "id": 5,
+      "action": "SET_BASELINE",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "metric_id": 3
+      },
+      "created_at": "2025-10-08T17:27:11.962901"
+    },
+    {
+      "id": 4,
+      "action": "ALERT_RESOLVED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "alert_id": 1
+      },
+      "created_at": "2025-10-08T15:20:32.149301"
+    },
+    {
+      "id": 3,
+      "action": "ALERT_CREATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "alert_id": 1,
+        "severity": "high",
+        "feature": "age_bucket"
+      },
+      "created_at": "2025-10-08T15:17:46.248823"
+    },
+    {
+      "id": 2,
+      "action": "DRIFT_EVALUATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "psi": 0.48236322737000514,
+        "severity": "high",
+        "metric_id": 2
+      },
+      "created_at": "2025-10-08T15:17:46.209294"
+    },
+    {
+      "id": 1,
+      "action": "SET_BASELINE",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "metric_id": 1
+      },
+      "created_at": "2025-10-08T15:17:30.080351"
+    }
+  ],
+  "metrics": {
+    "baselines": [
+      {
+        "id": 18,
+        "feature": "age_bucket",
+        "method": "psi_baseline",
+        "value": null,
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ]
+        },
+        "created_at": "2025-10-09T14:17:30.200201"
+      },
+      {
+        "id": 16,
+        "feature": "age_bucket",
+        "method": "psi_baseline",
+        "value": null,
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ]
+        },
+        "created_at": "2025-10-08T23:53:18.999156"
+      },
+      {
+        "id": 14,
+        "feature": "age_bucket",
+        "method": "psi_baseline",
+        "value": null,
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ]
+        },
+        "created_at": "2025-10-08T19:38:34.039615"
+      },
+      {
+        "id": 12,
+        "feature": "age_bucket",
+        "method": "psi_baseline",
+        "value": null,
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ]
+        },
+        "created_at": "2025-10-08T18:46:17.181429"
+      },
+      {
+        "id": 8,
+        "feature": "age_bucket",
+        "method": "psi_baseline",
+        "value": null,
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ]
+        },
+        "created_at": "2025-10-08T18:19:15.759574"
+      },
+      {
+        "id": 5,
+        "feature": "age_bucket",
+        "method": "psi_baseline",
+        "value": null,
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ]
+        },
+        "created_at": "2025-10-08T17:55:50.507889"
+      },
+      {
+        "id": 3,
+        "feature": "age_bucket",
+        "method": "psi_baseline",
+        "value": null,
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ]
+        },
+        "created_at": "2025-10-08T17:27:11.899897"
+      },
+      {
+        "id": 1,
+        "feature": "age_bucket",
+        "method": "psi_baseline",
+        "value": null,
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ]
+        },
+        "created_at": "2025-10-08T15:17:30.027821"
+      }
+    ],
+    "psi_evaluations": [
+      {
+        "id": 19,
+        "feature": "age_bucket",
+        "method": "psi_eval",
+        "value": "0.482363",
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ],
+          "actual": [
+            0.02,
+            0.08,
+            0.2,
+            0.35,
+            0.35
+          ],
+          "severity": "high"
+        },
+        "created_at": "2025-10-09T14:17:51.479050"
+      },
+      {
+        "id": 17,
+        "feature": "age_bucket",
+        "method": "psi_eval",
+        "value": "0.482363",
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ],
+          "actual": [
+            0.02,
+            0.08,
+            0.2,
+            0.35,
+            0.35
+          ],
+          "severity": "high"
+        },
+        "created_at": "2025-10-08T23:53:28.514489"
+      },
+      {
+        "id": 15,
+        "feature": "age_bucket",
+        "method": "psi_eval",
+        "value": "0.482363",
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ],
+          "actual": [
+            0.02,
+            0.08,
+            0.2,
+            0.35,
+            0.35
+          ],
+          "severity": "high"
+        },
+        "created_at": "2025-10-08T19:38:45.253271"
+      },
+      {
+        "id": 13,
+        "feature": "age_bucket",
+        "method": "psi_eval",
+        "value": "0.482363",
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ],
+          "actual": [
+            0.02,
+            0.08,
+            0.2,
+            0.35,
+            0.35
+          ],
+          "severity": "high"
+        },
+        "created_at": "2025-10-08T18:46:33.131947"
+      },
+      {
+        "id": 11,
+        "feature": "age_bucket",
+        "method": "psi_eval",
+        "value": "0.482363",
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ],
+          "actual": [
+            0.02,
+            0.08,
+            0.2,
+            0.35,
+            0.35
+          ],
+          "severity": "high"
+        },
+        "created_at": "2025-10-08T18:27:33.735145"
+      },
+      {
+        "id": 10,
+        "feature": "age_bucket",
+        "method": "psi_eval",
+        "value": "0.482363",
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ],
+          "actual": [
+            0.02,
+            0.08,
+            0.2,
+            0.35,
+            0.35
+          ],
+          "severity": "high"
+        },
+        "created_at": "2025-10-08T18:23:17.421359"
+      },
+      {
+        "id": 9,
+        "feature": "age_bucket",
+        "method": "psi_eval",
+        "value": "0.482363",
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ],
+          "actual": [
+            0.02,
+            0.08,
+            0.2,
+            0.35,
+            0.35
+          ],
+          "severity": "high"
+        },
+        "created_at": "2025-10-08T18:19:24.721921"
+      },
+      {
+        "id": 7,
+        "feature": "age_bucket",
+        "method": "psi_eval",
+        "value": "0.482363",
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ],
+          "actual": [
+            0.02,
+            0.08,
+            0.2,
+            0.35,
+            0.35
+          ],
+          "severity": "high"
+        },
+        "created_at": "2025-10-08T18:06:02.799619"
+      },
+      {
+        "id": 6,
+        "feature": "age_bucket",
+        "method": "psi_eval",
+        "value": "0.482363",
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ],
+          "actual": [
+            0.02,
+            0.08,
+            0.2,
+            0.35,
+            0.35
+          ],
+          "severity": "high"
+        },
+        "created_at": "2025-10-08T17:55:58.931759"
+      },
+      {
+        "id": 4,
+        "feature": "age_bucket",
+        "method": "psi_eval",
+        "value": "0.482363",
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ],
+          "actual": [
+            0.02,
+            0.08,
+            0.2,
+            0.35,
+            0.35
+          ],
+          "severity": "high"
+        },
+        "created_at": "2025-10-08T17:27:20.148292"
+      },
+      {
+        "id": 2,
+        "feature": "age_bucket",
+        "method": "psi_eval",
+        "value": "0.482363",
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ],
+          "actual": [
+            0.02,
+            0.08,
+            0.2,
+            0.35,
+            0.35
+          ],
+          "severity": "high"
+        },
+        "created_at": "2025-10-08T15:17:46.192246"
+      }
+    ]
+  },
+  "alerts": [
+    {
+      "id": 11,
+      "type": "drift",
+      "severity": "high",
+      "message": "Major drift detected on feature 'age_bucket' (PSI=0.482)",
+      "details": {
+        "psi": 0.48236322737000514,
+        "feature": "age_bucket",
+        "metric_id": 19
+      },
+      "status": "open",
+      "created_at": "2025-10-09T14:17:51.516853",
+      "resolved_at": null
+    },
+    {
+      "id": 10,
+      "type": "drift",
+      "severity": "high",
+      "message": "Major drift detected on feature 'age_bucket' (PSI=0.482)",
+      "details": {
+        "psi": 0.48236322737000514,
+        "feature": "age_bucket",
+        "metric_id": 17
+      },
+      "status": "open",
+      "created_at": "2025-10-08T23:53:28.543246",
+      "resolved_at": null
+    },
+    {
+      "id": 9,
+      "type": "drift",
+      "severity": "high",
+      "message": "Major drift detected on feature 'age_bucket' (PSI=0.482)",
+      "details": {
+        "psi": 0.48236322737000514,
+        "feature": "age_bucket",
+        "metric_id": 15
+      },
+      "status": "open",
+      "created_at": "2025-10-08T19:38:45.287619",
+      "resolved_at": null
+    },
+    {
+      "id": 8,
+      "type": "drift",
+      "severity": "high",
+      "message": "Major drift detected on feature 'age_bucket' (PSI=0.482)",
+      "details": {
+        "psi": 0.48236322737000514,
+        "feature": "age_bucket",
+        "metric_id": 13
+      },
+      "status": "open",
+      "created_at": "2025-10-08T18:46:33.150466",
+      "resolved_at": null
+    },
+    {
+      "id": 7,
+      "type": "drift",
+      "severity": "high",
+      "message": "Major drift detected on feature 'age_bucket' (PSI=0.482)",
+      "details": {
+        "psi": 0.48236322737000514,
+        "feature": "age_bucket",
+        "metric_id": 11
+      },
+      "status": "open",
+      "created_at": "2025-10-08T18:27:33.761146",
+      "resolved_at": null
+    },
+    {
+      "id": 6,
+      "type": "drift",
+      "severity": "high",
+      "message": "Major drift detected on feature 'age_bucket' (PSI=0.482)",
+      "details": {
+        "psi": 0.48236322737000514,
+        "feature": "age_bucket",
+        "metric_id": 10
+      },
+      "status": "open",
+      "created_at": "2025-10-08T18:23:17.468485",
+      "resolved_at": null
+    },
+    {
+      "id": 5,
+      "type": "drift",
+      "severity": "high",
+      "message": "Major drift detected on feature 'age_bucket' (PSI=0.482)",
+      "details": {
+        "psi": 0.48236322737000514,
+        "feature": "age_bucket",
+        "metric_id": 9
+      },
+      "status": "open",
+      "created_at": "2025-10-08T18:19:24.741077",
+      "resolved_at": null
+    },
+    {
+      "id": 4,
+      "type": "drift",
+      "severity": "high",
+      "message": "Major drift detected on feature 'age_bucket' (PSI=0.482)",
+      "details": {
+        "psi": 0.48236322737000514,
+        "feature": "age_bucket",
+        "metric_id": 7
+      },
+      "status": "open",
+      "created_at": "2025-10-08T18:06:02.845014",
+      "resolved_at": null
+    },
+    {
+      "id": 3,
+      "type": "drift",
+      "severity": "high",
+      "message": "Major drift detected on feature 'age_bucket' (PSI=0.482)",
+      "details": {
+        "psi": 0.48236322737000514,
+        "feature": "age_bucket",
+        "metric_id": 6
+      },
+      "status": "open",
+      "created_at": "2025-10-08T17:55:58.953272",
+      "resolved_at": null
+    },
+    {
+      "id": 2,
+      "type": "drift",
+      "severity": "high",
+      "message": "Major drift detected on feature 'age_bucket' (PSI=0.482)",
+      "details": {
+        "psi": 0.48236322737000514,
+        "feature": "age_bucket",
+        "metric_id": 4
+      },
+      "status": "open",
+      "created_at": "2025-10-08T17:27:20.163251",
+      "resolved_at": null
+    },
+    {
+      "id": 1,
+      "type": "drift",
+      "severity": "high",
+      "message": "Major drift detected on feature 'age_bucket' (PSI=0.482)",
+      "details": {
+        "psi": 0.48236322737000514,
+        "feature": "age_bucket",
+        "metric_id": 2
+      },
+      "status": "resolved",
+      "created_at": "2025-10-08T15:17:46.223746",
+      "resolved_at": "2025-10-08T22:07:42.039848"
+    }
+  ],
+  "summary": {
+    "open_alerts": 10,
+    "high_alerts": 11,
+    "evaluations_in_window": 11,
+    "approvals_in_window": 9
+  }
+}

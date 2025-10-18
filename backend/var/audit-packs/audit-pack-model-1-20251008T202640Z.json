@@ -1,0 +1,784 @@
+{
+  "generated_at": "2025-10-08T20:26:40.926824",
+  "window": {
+    "start": "2025-09-08T20:26:40.805947",
+    "end": "2025-10-08T20:26:40.805947"
+  },
+  "model": {
+    "id": 1,
+    "name": "fraud_detector",
+    "description": "demo",
+    "version": "1.0.0",
+    "stage": "development",
+    "status": "active",
+    "created_at": "2025-10-08T15:06:55.744750",
+    "updated_at": "2025-10-08T15:06:55.744764",
+    "model_metadata": {}
+  },
+  "approvals": [],
+  "audit_log": [
+    {
+      "id": 26,
+      "action": "ALERT_CREATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "alert_id": 9,
+        "severity": "high",
+        "feature": "age_bucket"
+      },
+      "created_at": "2025-10-08T19:38:45.315659"
+    },
+    {
+      "id": 25,
+      "action": "DRIFT_EVALUATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "psi": 0.48236322737000514,
+        "severity": "high",
+        "metric_id": 15
+      },
+      "created_at": "2025-10-08T19:38:45.272793"
+    },
+    {
+      "id": 24,
+      "action": "SET_BASELINE",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "metric_id": 14
+      },
+      "created_at": "2025-10-08T19:38:34.146663"
+    },
+    {
+      "id": 23,
+      "action": "ALERT_CREATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "alert_id": 8,
+        "severity": "high",
+        "feature": "age_bucket"
+      },
+      "created_at": "2025-10-08T18:46:33.160983"
+    },
+    {
+      "id": 22,
+      "action": "DRIFT_EVALUATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "psi": 0.48236322737000514,
+        "severity": "high",
+        "metric_id": 13
+      },
+      "created_at": "2025-10-08T18:46:33.141288"
+    },
+    {
+      "id": 21,
+      "action": "SET_BASELINE",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "metric_id": 12
+      },
+      "created_at": "2025-10-08T18:46:17.239756"
+    },
+    {
+      "id": 20,
+      "action": "ALERT_CREATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "alert_id": 7,
+        "severity": "high",
+        "feature": "age_bucket"
+      },
+      "created_at": "2025-10-08T18:27:33.770165"
+    },
+    {
+      "id": 19,
+      "action": "DRIFT_EVALUATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "psi": 0.48236322737000514,
+        "severity": "high",
+        "metric_id": 11
+      },
+      "created_at": "2025-10-08T18:27:33.751039"
+    },
+    {
+      "id": 18,
+      "action": "ALERT_CREATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "alert_id": 6,
+        "severity": "high",
+        "feature": "age_bucket"
+      },
+      "created_at": "2025-10-08T18:23:17.486115"
+    },
+    {
+      "id": 17,
+      "action": "DRIFT_EVALUATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "psi": 0.48236322737000514,
+        "severity": "high",
+        "metric_id": 10
+      },
+      "created_at": "2025-10-08T18:23:17.446239"
+    },
+    {
+      "id": 16,
+      "action": "ALERT_CREATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "alert_id": 5,
+        "severity": "high",
+        "feature": "age_bucket"
+      },
+      "created_at": "2025-10-08T18:19:24.753094"
+    },
+    {
+      "id": 15,
+      "action": "DRIFT_EVALUATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "psi": 0.48236322737000514,
+        "severity": "high",
+        "metric_id": 9
+      },
+      "created_at": "2025-10-08T18:19:24.732014"
+    },
+    {
+      "id": 14,
+      "action": "SET_BASELINE",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "metric_id": 8
+      },
+      "created_at": "2025-10-08T18:19:15.838784"
+    },
+    {
+      "id": 13,
+      "action": "ALERT_CREATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "alert_id": 4,
+        "severity": "high",
+        "feature": "age_bucket"
+      },
+      "created_at": "2025-10-08T18:06:02.855796"
+    },
+    {
+      "id": 12,
+      "action": "DRIFT_EVALUATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "psi": 0.48236322737000514,
+        "severity": "high",
+        "metric_id": 7
+      },
+      "created_at": "2025-10-08T18:06:02.833196"
+    },
+    {
+      "id": 11,
+      "action": "ALERT_CREATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "alert_id": 3,
+        "severity": "high",
+        "feature": "age_bucket"
+      },
+      "created_at": "2025-10-08T17:55:58.967767"
+    },
+    {
+      "id": 10,
+      "action": "DRIFT_EVALUATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "psi": 0.48236322737000514,
+        "severity": "high",
+        "metric_id": 6
+      },
+      "created_at": "2025-10-08T17:55:58.942725"
+    },
+    {
+      "id": 9,
+      "action": "SET_BASELINE",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "metric_id": 5
+      },
+      "created_at": "2025-10-08T17:55:50.536409"
+    },
+    {
+      "id": 8,
+      "action": "ALERT_RESOLVED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "alert_id": 1
+      },
+      "created_at": "2025-10-08T17:28:07.752755"
+    },
+    {
+      "id": 7,
+      "action": "ALERT_CREATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "alert_id": 2,
+        "severity": "high",
+        "feature": "age_bucket"
+      },
+      "created_at": "2025-10-08T17:27:20.172917"
+    },
+    {
+      "id": 6,
+      "action": "DRIFT_EVALUATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "psi": 0.48236322737000514,
+        "severity": "high",
+        "metric_id": 4
+      },
+      "created_at": "2025-10-08T17:27:20.155617"
+    },
+    {
+      "id": 5,
+      "action": "SET_BASELINE",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "metric_id": 3
+      },
+      "created_at": "2025-10-08T17:27:11.962901"
+    },
+    {
+      "id": 4,
+      "action": "ALERT_RESOLVED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "alert_id": 1
+      },
+      "created_at": "2025-10-08T15:20:32.149301"
+    },
+    {
+      "id": 3,
+      "action": "ALERT_CREATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "alert_id": 1,
+        "severity": "high",
+        "feature": "age_bucket"
+      },
+      "created_at": "2025-10-08T15:17:46.248823"
+    },
+    {
+      "id": 2,
+      "action": "DRIFT_EVALUATED",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "psi": 0.48236322737000514,
+        "severity": "high",
+        "metric_id": 2
+      },
+      "created_at": "2025-10-08T15:17:46.209294"
+    },
+    {
+      "id": 1,
+      "action": "SET_BASELINE",
+      "model_id": 1,
+      "actor": null,
+      "details": {
+        "feature": "age_bucket",
+        "metric_id": 1
+      },
+      "created_at": "2025-10-08T15:17:30.080351"
+    }
+  ],
+  "metrics": {
+    "baselines": [
+      {
+        "id": 14,
+        "feature": "age_bucket",
+        "method": "psi_baseline",
+        "value": null,
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ]
+        },
+        "created_at": "2025-10-08T19:38:34.039615"
+      },
+      {
+        "id": 12,
+        "feature": "age_bucket",
+        "method": "psi_baseline",
+        "value": null,
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ]
+        },
+        "created_at": "2025-10-08T18:46:17.181429"
+      },
+      {
+        "id": 8,
+        "feature": "age_bucket",
+        "method": "psi_baseline",
+        "value": null,
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ]
+        },
+        "created_at": "2025-10-08T18:19:15.759574"
+      },
+      {
+        "id": 5,
+        "feature": "age_bucket",
+        "method": "psi_baseline",
+        "value": null,
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ]
+        },
+        "created_at": "2025-10-08T17:55:50.507889"
+      },
+      {
+        "id": 3,
+        "feature": "age_bucket",
+        "method": "psi_baseline",
+        "value": null,
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ]
+        },
+        "created_at": "2025-10-08T17:27:11.899897"
+      },
+      {
+        "id": 1,
+        "feature": "age_bucket",
+        "method": "psi_baseline",
+        "value": null,
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ]
+        },
+        "created_at": "2025-10-08T15:17:30.027821"
+      }
+    ],
+    "psi_evaluations": [
+      {
+        "id": 15,
+        "feature": "age_bucket",
+        "method": "psi_eval",
+        "value": "0.482363",
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ],
+          "actual": [
+            0.02,
+            0.08,
+            0.2,
+            0.35,
+            0.35
+          ],
+          "severity": "high"
+        },
+        "created_at": "2025-10-08T19:38:45.253271"
+      },
+      {
+        "id": 13,
+        "feature": "age_bucket",
+        "method": "psi_eval",
+        "value": "0.482363",
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ],
+          "actual": [
+            0.02,
+            0.08,
+            0.2,
+            0.35,
+            0.35
+          ],
+          "severity": "high"
+        },
+        "created_at": "2025-10-08T18:46:33.131947"
+      },
+      {
+        "id": 11,
+        "feature": "age_bucket",
+        "method": "psi_eval",
+        "value": "0.482363",
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ],
+          "actual": [
+            0.02,
+            0.08,
+            0.2,
+            0.35,
+            0.35
+          ],
+          "severity": "high"
+        },
+        "created_at": "2025-10-08T18:27:33.735145"
+      },
+      {
+        "id": 10,
+        "feature": "age_bucket",
+        "method": "psi_eval",
+        "value": "0.482363",
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ],
+          "actual": [
+            0.02,
+            0.08,
+            0.2,
+            0.35,
+            0.35
+          ],
+          "severity": "high"
+        },
+        "created_at": "2025-10-08T18:23:17.421359"
+      },
+      {
+        "id": 9,
+        "feature": "age_bucket",
+        "method": "psi_eval",
+        "value": "0.482363",
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ],
+          "actual": [
+            0.02,
+            0.08,
+            0.2,
+            0.35,
+            0.35
+          ],
+          "severity": "high"
+        },
+        "created_at": "2025-10-08T18:19:24.721921"
+      },
+      {
+        "id": 7,
+        "feature": "age_bucket",
+        "method": "psi_eval",
+        "value": "0.482363",
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ],
+          "actual": [
+            0.02,
+            0.08,
+            0.2,
+            0.35,
+            0.35
+          ],
+          "severity": "high"
+        },
+        "created_at": "2025-10-08T18:06:02.799619"
+      },
+      {
+        "id": 6,
+        "feature": "age_bucket",
+        "method": "psi_eval",
+        "value": "0.482363",
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ],
+          "actual": [
+            0.02,
+            0.08,
+            0.2,
+            0.35,
+            0.35
+          ],
+          "severity": "high"
+        },
+        "created_at": "2025-10-08T17:55:58.931759"
+      },
+      {
+        "id": 4,
+        "feature": "age_bucket",
+        "method": "psi_eval",
+        "value": "0.482363",
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ],
+          "actual": [
+            0.02,
+            0.08,
+            0.2,
+            0.35,
+            0.35
+          ],
+          "severity": "high"
+        },
+        "created_at": "2025-10-08T17:27:20.148292"
+      },
+      {
+        "id": 2,
+        "feature": "age_bucket",
+        "method": "psi_eval",
+        "value": "0.482363",
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ],
+          "actual": [
+            0.02,
+            0.08,
+            0.2,
+            0.35,
+            0.35
+          ],
+          "severity": "high"
+        },
+        "created_at": "2025-10-08T15:17:46.192246"
+      }
+    ]
+  },
+  "alerts": [
+    {
+      "id": 9,
+      "type": "drift",
+      "severity": "high",
+      "message": "Major drift detected on feature 'age_bucket' (PSI=0.482)",
+      "details": {
+        "psi": 0.48236322737000514,
+        "feature": "age_bucket",
+        "metric_id": 15
+      },
+      "status": "open",
+      "created_at": "2025-10-08T19:38:45.287619",
+      "resolved_at": null
+    },
+    {
+      "id": 8,
+      "type": "drift",
+      "severity": "high",
+      "message": "Major drift detected on feature 'age_bucket' (PSI=0.482)",
+      "details": {
+        "psi": 0.48236322737000514,
+        "feature": "age_bucket",
+        "metric_id": 13
+      },
+      "status": "open",
+      "created_at": "2025-10-08T18:46:33.150466",
+      "resolved_at": null
+    },
+    {
+      "id": 7,
+      "type": "drift",
+      "severity": "high",
+      "message": "Major drift detected on feature 'age_bucket' (PSI=0.482)",
+      "details": {
+        "psi": 0.48236322737000514,
+        "feature": "age_bucket",
+        "metric_id": 11
+      },
+      "status": "open",
+      "created_at": "2025-10-08T18:27:33.761146",
+      "resolved_at": null
+    },
+    {
+      "id": 6,
+      "type": "drift",
+      "severity": "high",
+      "message": "Major drift detected on feature 'age_bucket' (PSI=0.482)",
+      "details": {
+        "psi": 0.48236322737000514,
+        "feature": "age_bucket",
+        "metric_id": 10
+      },
+      "status": "open",
+      "created_at": "2025-10-08T18:23:17.468485",
+      "resolved_at": null
+    },
+    {
+      "id": 5,
+      "type": "drift",
+      "severity": "high",
+      "message": "Major drift detected on feature 'age_bucket' (PSI=0.482)",
+      "details": {
+        "psi": 0.48236322737000514,
+        "feature": "age_bucket",
+        "metric_id": 9
+      },
+      "status": "open",
+      "created_at": "2025-10-08T18:19:24.741077",
+      "resolved_at": null
+    },
+    {
+      "id": 4,
+      "type": "drift",
+      "severity": "high",
+      "message": "Major drift detected on feature 'age_bucket' (PSI=0.482)",
+      "details": {
+        "psi": 0.48236322737000514,
+        "feature": "age_bucket",
+        "metric_id": 7
+      },
+      "status": "open",
+      "created_at": "2025-10-08T18:06:02.845014",
+      "resolved_at": null
+    },
+    {
+      "id": 3,
+      "type": "drift",
+      "severity": "high",
+      "message": "Major drift detected on feature 'age_bucket' (PSI=0.482)",
+      "details": {
+        "psi": 0.48236322737000514,
+        "feature": "age_bucket",
+        "metric_id": 6
+      },
+      "status": "open",
+      "created_at": "2025-10-08T17:55:58.953272",
+      "resolved_at": null
+    },
+    {
+      "id": 2,
+      "type": "drift",
+      "severity": "high",
+      "message": "Major drift detected on feature 'age_bucket' (PSI=0.482)",
+      "details": {
+        "psi": 0.48236322737000514,
+        "feature": "age_bucket",
+        "metric_id": 4
+      },
+      "status": "open",
+      "created_at": "2025-10-08T17:27:20.163251",
+      "resolved_at": null
+    },
+    {
+      "id": 1,
+      "type": "drift",
+      "severity": "high",
+      "message": "Major drift detected on feature 'age_bucket' (PSI=0.482)",
+      "details": {
+        "psi": 0.48236322737000514,
+        "feature": "age_bucket",
+        "metric_id": 2
+      },
+      "status": "resolved",
+      "created_at": "2025-10-08T15:17:46.223746",
+      "resolved_at": "2025-10-08T17:28:07.732239"
+    }
+  ],
+  "summary": {
+    "open_alerts": 8,
+    "high_alerts": 9,
+    "evaluations_in_window": 9,
+    "approvals_in_window": 0
+  }
+}

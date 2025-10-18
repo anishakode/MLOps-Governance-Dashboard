@@ -1,0 +1,21 @@
+{"id": 40, "action": "ALERTS_RESOLVED_BULK", "model_id": 1, "actor": null, "details": {"count": 6}, "created_at": "2025-10-11T00:30:28.495831"}
+{"id": 41, "action": "ALERTS_RESOLVED_BULK", "model_id": 1, "actor": null, "details": {"count": 0}, "created_at": "2025-10-11T00:31:13.081332"}
+{"id": 42, "action": "SET_BASELINE", "model_id": 1, "actor": null, "details": {"feature": "age_bucket", "metric_id": 18}, "created_at": "2025-10-11T11:48:21.993513"}
+{"id": 43, "action": "SET_BASELINE", "model_id": 1, "actor": null, "details": {"feature": "age_bucket", "metric_id": 19}, "created_at": "2025-10-11T11:50:50.837338"}
+{"id": 44, "action": "DRIFT_EVALUATED", "model_id": 1, "actor": null, "details": {"feature": "age_bucket", "psi": 0.48236322737000514, "severity": "high", "metric_id": 20}, "created_at": "2025-10-11T11:51:02.594000"}
+{"id": 45, "action": "ALERT_CREATED", "model_id": 1, "actor": null, "details": {"alert_id": 10, "severity": "high", "feature": "age_bucket"}, "created_at": "2025-10-11T11:51:02.635717"}
+{"id": 46, "action": "DQ_CONFIG_SET", "model_id": 1, "actor": null, "details": {"feature": "zipcode", "missing": {"medium": 0.05, "high": 0.1}}, "created_at": "2025-10-11T12:24:09.968949"}
+{"id": 47, "action": "DQ_MISSING_EVALUATED", "model_id": 1, "actor": null, "details": {"feature": "zipcode", "missing_rate": 0.08, "severity": "medium", "metric_id": 22}, "created_at": "2025-10-11T12:24:19.043829"}
+{"id": 48, "action": "ALERT_CREATED", "model_id": 1, "actor": null, "details": {"alert_id": 11, "severity": "medium", "feature": "zipcode", "type": "dq"}, "created_at": "2025-10-11T12:24:19.074886"}
+{"id": 49, "action": "SET_BASELINE", "model_id": 4, "actor": null, "details": {"feature": "age_bucket", "metric_id": 23}, "created_at": "2025-10-11T12:58:48.874432"}
+{"id": 50, "action": "PSI_SNAPSHOT", "model_id": 4, "actor": "alice", "details": {"feature": "age_bucket", "metric_id": 24}, "created_at": "2025-10-11T12:59:06.651490"}
+{"id": 51, "action": "DQ_SNAPSHOT", "model_id": 4, "actor": "alice", "details": {"feature": "zipcode", "metric_id": 25, "kind": "missing"}, "created_at": "2025-10-11T13:11:12.792387"}
+{"id": 52, "action": "SET_BASELINE", "model_id": 5, "actor": null, "details": {"feature": "age_bucket", "metric_id": 26}, "created_at": "2025-10-11T13:14:45.223571"}
+{"id": 53, "action": "PSI_SNAPSHOT", "model_id": 5, "actor": "alice", "details": {"feature": "age_bucket", "metric_id": 27}, "created_at": "2025-10-11T13:14:58.373817"}
+{"id": 54, "action": "DQ_SNAPSHOT", "model_id": 5, "actor": "alice", "details": {"feature": "zipcode", "metric_id": 28, "kind": "missing"}, "created_at": "2025-10-11T13:15:14.725427"}
+{"id": 55, "action": "DQ_SNAPSHOT", "model_id": 5, "actor": "alice", "details": {"feature": "zipcode", "metric_id": 29, "kind": "missing"}, "created_at": "2025-10-11T13:29:03.681693"}
+{"id": 56, "action": "PSI_SNAPSHOT", "model_id": 5, "actor": "alice", "details": {"feature": "age_bucket", "metric_id": 30}, "created_at": "2025-10-11T13:29:20.409208"}
+{"id": 57, "action": "DRIFT_EVALUATED", "model_id": 5, "actor": null, "details": {"feature": "age_bucket", "psi": 0.35201092946855816, "severity": "high", "metric_id": 31}, "created_at": "2025-10-11T14:38:56.041798"}
+{"id": 58, "action": "ALERT_CREATED", "model_id": 5, "actor": null, "details": {"alert_id": 12, "severity": "high", "feature": "age_bucket"}, "created_at": "2025-10-11T14:38:56.173150"}
+{"id": 59, "action": "DQ_MISSING_EVALUATED", "model_id": 5, "actor": null, "details": {"feature": "zipcode", "missing_rate": 0.22, "severity": "high", "metric_id": 32}, "created_at": "2025-10-11T14:38:56.751115"}
+{"id": 60, "action": "ALERT_CREATED", "model_id": 5, "actor": null, "details": {"alert_id": 13, "severity": "high", "feature": "zipcode", "type": "dq"}, "created_at": "2025-10-11T14:38:56.787397"}

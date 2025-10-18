@@ -1,0 +1,2 @@
+{"id": 61, "action": "DQ_MISSING_EVALUATED", "model_id": 1, "actor": null, "details": {"feature": "zipcode", "missing_rate": 0.22, "severity": "high", "metric_id": 33}, "created_at": "2025-10-12T00:00:49.912823"}
+{"id": 62, "action": "ALERT_CREATED", "model_id": 1, "actor": null, "details": {"alert_id": 14, "severity": "high", "feature": "zipcode", "type": "dq"}, "created_at": "2025-10-12T00:00:49.971785"}

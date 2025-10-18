@@ -1,0 +1,79 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: mlops_postgres
+    environment:
+      POSTGRES_USER: mlops_user
+      POSTGRES_PASSWORD: mlops_pass
+      POSTGRES_DB: mlops_governance
+    ports: ["5432:5432"]
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mlops_user -d mlops_governance"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [mlops_network]
+
+  redis:
+    image: redis:7-alpine
+    container_name: mlops_redis
+    ports: ["6379:6379"]
+    volumes: [redis_data:/data]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [mlops_network]
+
+  api:
+    build:
+      context: .                # ← repo root (where Dockerfile lives)
+      dockerfile: Dockerfile
+    container_name: mlops_api
+    environment:
+      DATABASE_URL: postgresql+psycopg2://mlops_user:mlops_pass@postgres:5432/mlops_governance
+      JWT_SECRET: "change-me-in-prod"
+      ALERT_COOLDOWN_MIN: "30"
+      POLICY_PATH: /app/backend/policies/policy.yaml    # ← note the /backend path
+      AUDIT_DIR: /app/backend/var/audit
+      AUDIT_PACK_DIR: /app/backend/var/audit-packs
+      ALEMBIC_CONFIG: /app/backend/alembic.ini          # ← belt-and-braces
+      SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL}
+    volumes:
+      - ./backend:/app/backend                          # ← mount backend into container
+    ports: ["8000:8000"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: >
+      bash -lc "alembic upgrade head &&
+                uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [mlops_network]
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:latest
+    container_name: mlops_mlflow
+    command: mlflow server --host 0.0.0.0 --port 5000 \
+             --backend-store-uri sqlite:///mlflow.db \
+             --default-artifact-root /mlruns
+    ports: ["5000:5000"]
+    volumes: [mlflow_data:/mlruns]
+    networks: [mlops_network]
+
+volumes:
+  postgres_data:
+  redis_data:
+  audit_data:
+  mlflow_data:
+
+networks:
+  mlops_network:
+    driver: bridge

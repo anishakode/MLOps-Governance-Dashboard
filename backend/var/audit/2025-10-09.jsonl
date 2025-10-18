@@ -1,0 +1,21 @@
+{"id": 50, "action": "SET_BASELINE", "model_id": 1, "actor": null, "details": {"feature": "age_bucket", "metric_id": 18}, "created_at": "2025-10-09T14:17:30.235434"}
+{"id": 51, "action": "DRIFT_EVALUATED", "model_id": 1, "actor": null, "details": {"feature": "age_bucket", "psi": 0.48236322737000514, "severity": "high", "metric_id": 19}, "created_at": "2025-10-09T14:17:51.495690"}
+{"id": 52, "action": "ALERT_CREATED", "model_id": 1, "actor": null, "details": {"alert_id": 11, "severity": "high", "feature": "age_bucket"}, "created_at": "2025-10-09T14:17:51.527898"}
+{"id": 53, "action": "REQUEST_PROMOTION", "model_id": 1, "actor": "alice", "details": {"target": "production", "justification": "try prod", "approval_id": 6}, "created_at": "2025-10-09T14:18:50.337271"}
+{"id": 54, "action": "DECIDE_PROMOTION", "model_id": 1, "actor": "bob", "details": {"approval_id": 6, "decision": "approved", "note": "", "approvals": 1, "needed": 2}, "created_at": "2025-10-09T14:19:18.144426"}
+{"id": 55, "action": "DECIDE_PROMOTION", "model_id": 1, "actor": "carol", "details": {"approval_id": 6, "decision": "approved", "note": "", "approvals": 2, "needed": 2}, "created_at": "2025-10-09T14:19:47.168686"}
+{"id": 56, "action": "POLICY_WAIVER_USED", "model_id": 1, "actor": "carol", "details": {"approval_id": 6, "waivers": [{"rule": "block_on_alerts", "waiver_id": 1}], "target": "production"}, "created_at": "2025-10-09T14:19:47.262286"}
+{"id": 57, "action": "STAGE_CHANGED", "model_id": 1, "actor": "carol", "details": {"new_stage": "production", "approval_id": 6}, "created_at": "2025-10-09T14:19:47.321306"}
+{"id": 58, "action": "WAIVER_GRANTED", "model_id": 1, "actor": "cto", "details": {"waiver_id": 2, "rule": "block_on_alerts", "target": "production", "expires_at": "2025-10-10T15:19:59"}, "created_at": "2025-10-09T14:20:09.078305"}
+{"id": 59, "action": "REQUEST_PROMOTION", "model_id": 1, "actor": "alice", "details": {"target": "production", "justification": "with waiver", "approval_id": 7}, "created_at": "2025-10-09T14:20:30.697201"}
+{"id": 60, "action": "DECIDE_PROMOTION", "model_id": 1, "actor": "bob", "details": {"approval_id": 7, "decision": "approved", "note": "", "approvals": 1, "needed": 2}, "created_at": "2025-10-09T14:20:51.908752"}
+{"id": 61, "action": "DECIDE_PROMOTION", "model_id": 1, "actor": "carol", "details": {"approval_id": 7, "decision": "approved", "note": "", "approvals": 2, "needed": 2}, "created_at": "2025-10-09T14:21:10.780220"}
+{"id": 62, "action": "POLICY_WAIVER_USED", "model_id": 1, "actor": "carol", "details": {"approval_id": 7, "waivers": [{"rule": "block_on_alerts", "waiver_id": 2}], "target": "production"}, "created_at": "2025-10-09T14:21:10.797766"}
+{"id": 63, "action": "STAGE_CHANGED", "model_id": 1, "actor": "carol", "details": {"new_stage": "production", "approval_id": 7}, "created_at": "2025-10-09T14:21:10.817883"}
+{"id": 64, "action": "REQUEST_PROMOTION", "model_id": 1, "actor": "dave", "details": {"target": "staging", "justification": "sod test", "approval_id": 8}, "created_at": "2025-10-09T14:21:57.343595"}
+{"id": 65, "action": "WAIVER_GRANTED", "model_id": 1, "actor": "cto", "details": {"waiver_id": 3, "rule": "block_on_alerts", "target": "production", "expires_at": "2025-10-10T15:27:14"}, "created_at": "2025-10-09T14:27:24.257186"}
+{"id": 66, "action": "REQUEST_PROMOTION", "model_id": 1, "actor": "alice", "details": {"target": "production", "justification": "try prod", "approval_id": 9}, "created_at": "2025-10-09T14:27:43.533487"}
+{"id": 67, "action": "DECIDE_PROMOTION", "model_id": 1, "actor": "bob", "details": {"approval_id": 9, "decision": "approved", "note": "", "approvals": 1, "needed": 2}, "created_at": "2025-10-09T14:28:10.925392"}
+{"id": 68, "action": "DECIDE_PROMOTION", "model_id": 1, "actor": "carol", "details": {"approval_id": 9, "decision": "approved", "note": "", "approvals": 2, "needed": 2}, "created_at": "2025-10-09T14:28:27.694212"}
+{"id": 69, "action": "POLICY_WAIVER_USED", "model_id": 1, "actor": "carol", "details": {"approval_id": 9, "waivers": [{"rule": "block_on_alerts", "waiver_id": 3}], "target": "production"}, "created_at": "2025-10-09T14:28:27.735409"}
+{"id": 70, "action": "STAGE_CHANGED", "model_id": 1, "actor": "carol", "details": {"new_stage": "production", "approval_id": 9}, "created_at": "2025-10-09T14:28:27.759851"}

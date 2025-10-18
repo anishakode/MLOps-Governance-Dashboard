@@ -1,0 +1,10 @@
+# Governance-as-code: tweak freely & reload without restarting the API
+rules:
+  # Block promotions if there are open alerts within the lookback window
+  block_on_alerts:
+    severities: [medium,high] 
+    lookback_hours: 24
+
+  # Require PSI baselines for critical features before promotion
+  require_baselines:
+    features: ["age_bucket"]  # add features as you introduce monitors
