@@ -10,7 +10,7 @@ from datetime import datetime, timezone, timedelta
 from mlflow.tracking import MlflowClient
 from collections import defaultdict
 from pathlib import Path
-import mlflow, uvicorn, asyncio, os
+import mlflow, uvicorn, asyncio, os, requests, json
 
 # Import our modules
 from app.core.database import get_db, engine, Base, SessionLocal
@@ -103,6 +103,9 @@ class ModelResponse(BaseModel):
     
     class Config:
         from_attributes = True
+
+class AlertCommentIn(BaseModel):
+    comment: str
 
 @app.get("/health")
 def health_check(db: Session = Depends(get_db)):
@@ -442,8 +445,36 @@ class AlertOut(BaseModel):
 
 @app.get("/api/alerts", response_model=List[AlertOut])
 def api_list_alerts(model_id: Optional[int] = None, status: Optional[str] = None, db: Session = Depends(get_db)):
-    rows = list_alerts(db, model_id, status)
+    q = db.query(Alert)
+    if model_id is not None:
+        q = q.filter(Alert.model_id == model_id)
+    if status is not None:
+        q = q.filter(Alert.status == status)
+    rows = q.order_by(Alert.created_at.desc()).all()
+    print(f"[alerts] returning {len(rows)} rows (model_id={model_id}, status={status})")
     return [AlertOut.model_validate(r) for r in rows]
+
+@app.get("/debug/alerts/raw")
+def debug_alerts_raw(model_id: Optional[int] = None, db: Session = Depends(get_db)):
+    q = db.query(Alert)
+    if model_id is not None:
+        q = q.filter(Alert.model_id == model_id)
+    rows = q.order_by(Alert.created_at.desc()).all()
+    out = []
+    for a in rows:
+        out.append({
+            "id": a.id,
+            "model_id": a.model_id,
+            "type": a.type,
+            "severity": a.severity,
+            "status": a.status,
+            "message": a.message,
+            "created_at": a.created_at.isoformat() if a.created_at else None,
+            "details": a.details,
+        })
+    print(f"[debug/alerts/raw] rows={len(out)} for model_id={model_id}")
+    return out
+
 
 @app.post("/api/alerts/{alert_id}/resolve", response_model=AlertOut)
 def api_resolve_alert(alert_id: int, db: Session = Depends(get_db)):
@@ -454,6 +485,52 @@ def api_resolve_alert(alert_id: int, db: Session = Depends(get_db)):
 
 class SlackWebhookIn(BaseModel):
     webhook_url: str
+
+# Acknowledge (set status = acknowledged)
+@app.post("/api/alerts/{alert_id}/ack", response_model=AlertOut)
+def api_ack_alert(alert_id: int,
+                  db: Session = Depends(get_db),
+                  user=Depends(require_role("approver","admin"))):
+    a = db.get(Alert, alert_id)
+    if not a:
+        raise HTTPException(404, "Alert not found")
+    if a.status == "resolved":
+        raise HTTPException(400, "Alert already resolved")
+    a.status = "acknowledged"
+    db.commit(); db.refresh(a)
+    record_audit(db, "ALERT_ACKED", a.model_id, getattr(user, "username", None), {"alert_id": a.id})
+    return AlertOut.model_validate(a)
+
+
+# Comment on an alert (stored in audit trail)
+@app.post("/api/alerts/{alert_id}/comment", response_model=dict)
+def api_comment_alert(alert_id: int, body: AlertCommentIn,
+                      db: Session = Depends(get_db),
+                      user=Depends(require_role("approver","admin"))):
+    a = db.get(Alert, alert_id)
+    if not a:
+        raise HTTPException(404, "Alert not found")
+    record_audit(db, "ALERT_COMMENTED", a.model_id, getattr(user, "username", None),
+                 {"alert_id": a.id, "comment": body.comment})
+    return {"alert_id": a.id, "comment": body.comment, "recorded": True}
+
+
+# Per-model alert summary (counts by status + severity)
+@app.get("/api/models/{model_id}/alerts/summary", response_model=dict)
+def api_alert_summary(model_id: int,
+                      db: Session = Depends(get_db),
+                      user=Depends(require_role("viewer","approver","admin"))):
+    rows = db.query(Alert).filter(Alert.model_id == model_id).all()
+    summary = {
+        "total": len(rows),
+        "by_status": {"open": 0, "acknowledged": 0, "resolved": 0},
+        "by_severity": {"low": 0, "medium": 0, "high": 0},
+    }
+    for r in rows:
+        summary["by_status"][r.status] = summary["by_status"].get(r.status, 0) + 1
+        summary["by_severity"][r.severity] = summary["by_severity"].get(r.severity, 0) + 1
+    return summary
+
 
 @app.post("/config/slack-webhook", response_model=dict)
 def api_set_slack_webhook(body: SlackWebhookIn, user=Depends(require_role("admin"))):
@@ -476,8 +553,6 @@ def api_debug_slack():
 
 @app.post("/debug/slack/verbose", response_model=dict)
 def api_debug_slack_verbose():
-    import requests, json, os
-    from app.utils.runtime_config import get_slack_webhook
     url = (get_slack_webhook() or os.getenv("SLACK_WEBHOOK_URL","")).strip()
     if not url:
         return {"configured": False, "sent": False, "reason": "no_webhook"}
@@ -511,7 +586,6 @@ def api_audit_pack(model_id: int, start: Optional[str] = None, end: Optional[str
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"audit_pack_failed: {e}")
 
-from fastapi.responses import FileResponse
 
 @app.get("/api/audit-packs", response_model=List[dict])
 def list_audit_packs():

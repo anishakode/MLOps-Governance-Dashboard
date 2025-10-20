@@ -1,0 +1,8 @@
+{"id": 63, "action": "DQ_SNAPSHOT", "model_id": 2, "actor": "alice", "details": {"feature": "zipcode", "metric_id": 34, "kind": "missing"}, "created_at": "2025-10-18T14:33:10.125625"}
+{"id": 64, "action": "PSI_SNAPSHOT", "model_id": 2, "actor": "alice", "details": {"feature": "age_bucket", "metric_id": 35}, "created_at": "2025-10-18T14:33:20.783551"}
+{"id": 65, "action": "DRIFT_EVALUATED", "model_id": 2, "actor": null, "details": {"feature": "age_bucket", "psi": 0.35201092946855816, "severity": "high", "metric_id": 36}, "created_at": "2025-10-18T14:35:18.940569"}
+{"id": 66, "action": "ALERT_CREATED", "model_id": 2, "actor": null, "details": {"alert_id": 15, "severity": "high", "feature": "age_bucket"}, "created_at": "2025-10-18T14:35:18.976899"}
+{"id": 67, "action": "DQ_MISSING_EVALUATED", "model_id": 2, "actor": null, "details": {"feature": "zipcode", "missing_rate": 0.22, "severity": "high", "metric_id": 37}, "created_at": "2025-10-18T14:35:19.325280"}
+{"id": 68, "action": "ALERT_CREATED", "model_id": 2, "actor": null, "details": {"alert_id": 16, "severity": "high", "feature": "zipcode", "type": "dq"}, "created_at": "2025-10-18T14:35:19.348782"}
+{"id": 69, "action": "DQ_MISSING_EVALUATED", "model_id": 2, "actor": null, "details": {"feature": "zipcode", "missing_rate": 0.22, "severity": "high", "metric_id": 38}, "created_at": "2025-10-18T14:45:53.415581"}
+{"id": 70, "action": "ALERT_SUPPRESSED", "model_id": 2, "actor": null, "details": {"reason": "duplicate_within_cooldown", "cooldown_min": 30, "feature": "zipcode", "severity": "high", "type": "dq", "kind": "missing"}, "created_at": "2025-10-18T14:45:53.472925"}
