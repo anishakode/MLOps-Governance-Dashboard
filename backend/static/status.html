@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>MLOps Governance — Status</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<style>
+  body{margin:0;background:#0b1020;color:#e5e7eb;font:14px/1.4 system-ui,Segoe UI,Roboto,sans-serif}
+  header{padding:14px 18px;border-bottom:1px solid #1f2937;background:#0f172a;display:flex;justify-content:space-between;align-items:center}
+  h1{font-size:16px;margin:0}
+  main{padding:16px;max-width:1100px;margin:auto}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+  .card{background:#111827;border:1px solid #1f2937;border-radius:12px;padding:12px}
+  .muted{color:#94a3b8}
+  .row{display:flex;justify-content:space-between;align-items:center;margin:6px 0}
+  .badge{display:inline-block;padding:2px 8px;border:1px solid #334155;border-radius:999px;font-size:12px}
+  .ok{color:#86efac;border-color:#166534}
+  .warn{color:#fde68a;border-color:#854d0e}
+  .err{color:#fecaca;border-color:#7f1d1d}
+  .mono{font-family: ui-monospace, Menlo, Consolas, monospace}
+  .foot{margin-top:16px;color:#94a3b8;font-size:12px}
+  a{color:#93c5fd;text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>MLOps Governance — Status</h1>
+  <div class="muted">public read-only</div>
+</header>
+<main>
+  <div id="grid" class="grid"></div>
+  <div class="foot">Auto-refreshing every 15s • <a href="/admin">Admin</a></div>
+</main>
+
+<script>
+const Base = location.origin;
+
+function card(m) {
+  const sevClass = m.open_alerts === 0 ? 'ok' : (m.open_alerts <= 2 ? 'warn' : 'err');
+  const statusText = m.open_alerts === 0 ? 'OK' : `ALERTS ${m.open_alerts}`;
+  const lm = m.last_metric_at ? new Date(m.last_metric_at).toLocaleString() : '—';
+  const badgeUrl = `${Base}/badge/model/${m.id}.svg`;
+  return `
+    <div class="card">
+      <div class="row">
+        <div><strong>#${m.id}</strong> &nbsp; ${m.name}</div>
+        <span class="badge">${m.stage}</span>
+      </div>
+      <div class="row">
+        <span class="muted">Status</span>
+        <span class="badge ${sevClass}">${statusText}</span>
+      </div>
+      <div class="row">
+        <span class="muted">Last metric</span>
+        <span class="mono">${lm}</span>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <img src="${badgeUrl}" alt="badge for ${m.name}" height="20"/>
+        <a class="muted" href="${badgeUrl}" target="_blank" rel="noopener" style="margin-left:8px">svg</a>
+      </div>
+    </div>`;
+}
+
+async function load() {
+  try{
+    const res = await fetch(Base + "/public/status");
+    const items = await res.json();
+    document.getElementById("grid").innerHTML = items.map(card).join("");
+  } catch(e) {
+    document.getElementById("grid").innerHTML = `<div class="card">Failed to load status</div>`;
+  }
+}
+
+load();
+setInterval(load, 15000);
+</script>
+</body>
+</html>

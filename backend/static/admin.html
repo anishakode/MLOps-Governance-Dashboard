@@ -66,6 +66,7 @@
       <div class="row">
         <select id="model-select"></select>
         <button onclick="loadModels()">Refresh</button>
+        <button class="primary" onclick="createModel()">Create model</button>
       </div>
       <div class="row">
         <button class="primary" onclick="loadAlerts()">Load Alerts</button>
@@ -124,6 +125,16 @@
     <h2>Alerts</h2>
     <div class="row" style="margin-bottom:8px">
       <span class="hint">Click a row to select; actions apply to the selection.</span>
+    </div>
+    <div class="row" style="margin-bottom:8px">
+      <label class="muted">Status:</label>
+      <select id="status-filter" style="max-width:160px">
+        <option value="">All</option>
+        <option value="open">Open</option>
+        <option value="acknowledged">Acknowledged</option>
+        <option value="resolved">Resolved</option>
+      </select>
+      <button onclick="loadAlerts()">Apply</button>
     </div>
     <table id="alerts-table">
       <thead>
@@ -186,10 +197,33 @@ async function loadModels() {
   if (data.length) { sel.value = data[0].id; await loadAlerts(); }
 }
 
+async function createModel(){
+  const name = prompt("Model name:", "demo_"+Math.floor(Math.random()*10000));
+  if(!name) return;
+  const version = prompt("Version:", "1.0.0") || "1.0.0";
+  const desc = prompt("Description (optional):", "demo");
+  const res = await fetch(Base + "/api/models", {
+    method:"POST", headers: authHeaders(),
+    body: JSON.stringify({ name, version, description: desc || null })
+  });
+  if(!res.ok){
+    const t = await res.text();
+    alert("create failed: " + t);
+    return;
+  }
+  const m = await res.json();
+  // Optional: promote to production so monitor picks it up
+  await fetch(Base + `/api/models/${m.id}/stage?stage=production`, { method:"POST", headers: authHeaders() });
+  await loadModels();
+  alert(`Created model #${m.id} (${m.name}) and set to production`);
+}
+
 // ------------- alerts -------------
 async function loadAlerts() {
   const mid = byId("model-select").value;
-  const res = await fetch(Base + `/api/alerts?model_id=${mid}`, { headers: authHeaders() });
+  const status = byId("status-filter") ? byId("status-filter").value : "";
+  const q = status ? `&status=${encodeURIComponent(status)}` : "";
+  const res = await fetch(Base + `/api/alerts?model_id=${mid}${q}`, { headers: authHeaders() });
   const rows = await res.json();
   const tbody = byId("alerts-table").querySelector("tbody");
   tbody.innerHTML = "";

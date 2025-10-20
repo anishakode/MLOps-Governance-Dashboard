@@ -4,7 +4,7 @@ from fastapi.responses import Response, FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
 from sqlalchemy.orm import Session
-from sqlalchemy import text, inspect
+from sqlalchemy import text, inspect, func
 from pydantic import BaseModel, Field
 from typing import Dict, List, Optional, Literal
 from datetime import datetime, timezone, timedelta
@@ -1112,6 +1112,68 @@ async def _monitor_loop():
 @app.get("/admin", include_in_schema=False)
 def admin_page():
     return FileResponse(STATIC_DIR / "admin.html")
+
+@app.get("/public/status", response_model=list[dict], include_in_schema=False)
+def public_status(db: Session = Depends(get_db)):
+    """
+    Public read-only summary per model:
+      - id, name, stage
+      - open_alerts count
+      - last_metric_at (UTC ISO)
+    """
+    models = db.query(ModelDB).order_by(ModelDB.id.asc()).all()
+    out = []
+    for m in models:
+        open_cnt = db.query(Alert).filter(Alert.model_id == m.id, Alert.status == "open").count()
+        last_metric = (
+            db.query(func.max(MonitoringMetric.created_at))
+            .filter(MonitoringMetric.model_id == m.id)
+            .scalar()
+        )
+        out.append({
+            "id": m.id,
+            "name": m.name,
+            "stage": m.stage,
+            "open_alerts": int(open_cnt),
+            "last_metric_at": last_metric.isoformat() if last_metric else None,
+        })
+    return out
+
+@app.get("/badge/model/{model_id}.svg", include_in_schema=False)
+def model_badge(model_id: int, db: Session = Depends(get_db)):
+    m = db.get(ModelDB, model_id)
+    if not m:
+        return Response(content="<svg xmlns='http://www.w3.org/2000/svg' width='120' height='20'></svg>", media_type="image/svg+xml", status_code=404)
+    open_cnt = db.query(Alert).filter(Alert.model_id == model_id, Alert.status == "open").count()
+    label = f"{m.name[:12]}".replace("&","&amp;")
+    if open_cnt == 0:
+        msg, fill = "OK", "#10b981"  # green
+    else:
+        msg, fill = f"ALERTS {open_cnt}", "#ef4444"  # red
+
+    # a simple shields-style badge
+    left = label
+    right = msg
+    # rough widths
+    lw = max(60, 7 * len(left) + 20)
+    rw = max(60, 8 * len(right) + 20)
+    w = lw + rw
+    svg = f"""<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="20" role="img" aria-label="{left}: {right}">
+  <linearGradient id="s" x2="0" y2="100%"><stop offset="0" stop-color="#fff" stop-opacity=".7"/><stop offset=".1" stop-opacity=".1"/><stop offset=".9" stop-opacity=".3"/><stop offset="1" stop-opacity=".5"/></linearGradient>
+  <mask id="m"><rect width="{w}" height="20" rx="3" fill="#fff"/></mask>
+  <g mask="url(#m)">
+    <rect width="{lw}" height="20" fill="#555"/>
+    <rect x="{lw}" width="{rw}" height="20" fill="{fill}"/>
+    <rect width="{w}" height="20" fill="url(#s)"/>
+  </g>
+  <g fill="#fff" text-anchor="middle"
+     font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11">
+    <text x="{lw/2}" y="14">{left}</text>
+    <text x="{lw+rw/2}" y="14">{right}</text>
+  </g>
+</svg>"""
+    return Response(content=svg, media_type="image/svg+xml")
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

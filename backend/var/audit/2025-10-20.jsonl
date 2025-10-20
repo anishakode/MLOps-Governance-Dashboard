@@ -12,3 +12,9 @@
 {"id": 82, "action": "SET_BASELINE", "model_id": 1, "actor": null, "details": {"feature": "age_bucket_admin", "metric_id": 41}, "created_at": "2025-10-20T15:41:58.127253"}
 {"id": 83, "action": "DRIFT_EVALUATED", "model_id": 1, "actor": null, "details": {"feature": "age_bucket_admin", "psi": 0.35201092946855816, "severity": "high", "metric_id": 42}, "created_at": "2025-10-20T15:41:58.220985"}
 {"id": 84, "action": "ALERT_CREATED", "model_id": 1, "actor": null, "details": {"alert_id": 19, "severity": "high", "feature": "age_bucket_admin"}, "created_at": "2025-10-20T15:41:58.286361"}
+{"id": 85, "action": "ALERT_COMMENTED", "model_id": 2, "actor": "alice", "details": {"alert_id": 17, "comment": "Investigating - likely upstream feed lag."}, "created_at": "2025-10-20T20:58:12.739128"}
+{"id": 86, "action": "DQ_MISSING_EVALUATED", "model_id": 2, "actor": null, "details": {"feature": "zipcode_demo_fresh", "missing_rate": 0.22, "severity": "high", "metric_id": 43}, "created_at": "2025-10-20T20:58:47.457614"}
+{"id": 87, "action": "ALERT_CREATED", "model_id": 2, "actor": null, "details": {"alert_id": 20, "severity": "high", "feature": "zipcode_demo_fresh", "type": "dq"}, "created_at": "2025-10-20T20:58:47.506545"}
+{"id": 88, "action": "ALERT_ACKED", "model_id": 1, "actor": "alice", "details": {"alert_id": 19}, "created_at": "2025-10-20T21:12:22.113404"}
+{"id": 89, "action": "ALERT_ACKED", "model_id": 1, "actor": "alice", "details": {"alert_id": 18}, "created_at": "2025-10-20T21:12:28.554303"}
+{"id": 90, "action": "ALERT_RESOLVED", "model_id": 1, "actor": null, "details": {"alert_id": 19}, "created_at": "2025-10-20T21:12:42.393420"}
