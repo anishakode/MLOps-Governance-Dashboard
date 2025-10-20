@@ -9,9 +9,7 @@ jobs:
         with: { python-version: "3.11" }
       - name: Install
         run: |
-          cd backend
           pip install -r requirements.txt
-          pip install pytest
       - name: Lint (ruff if available)
         run: |
           cd backend
