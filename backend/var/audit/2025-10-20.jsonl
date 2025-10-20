@@ -1,0 +1,14 @@
+{"id": 71, "action": "ALERT_ACKED", "model_id": 2, "actor": "alice", "details": {"alert_id": 16}, "created_at": "2025-10-20T12:27:32.083402"}
+{"id": 72, "action": "ALERT_COMMENTED", "model_id": 2, "actor": "alice", "details": {"alert_id": 16, "comment": "Investigating - likely upstream feed lag."}, "created_at": "2025-10-20T12:27:40.819109"}
+{"id": 73, "action": "ALERTS_RESOLVED_BULK", "model_id": 2, "actor": "alice", "details": {"count": 4}, "created_at": "2025-10-20T12:28:09.097628"}
+{"id": 74, "action": "DQ_MISSING_EVALUATED", "model_id": 2, "actor": null, "details": {"feature": "zipcode_demo_fresh", "missing_rate": 0.22, "severity": "high", "metric_id": 39}, "created_at": "2025-10-20T12:35:25.096135"}
+{"id": 75, "action": "ALERT_CREATED", "model_id": 2, "actor": null, "details": {"alert_id": 17, "severity": "high", "feature": "zipcode_demo_fresh", "type": "dq"}, "created_at": "2025-10-20T12:35:25.141833"}
+{"id": 76, "action": "ALERT_RESOLVED", "model_id": 1, "actor": null, "details": {"alert_id": 1}, "created_at": "2025-10-20T15:31:23.344148"}
+{"id": 77, "action": "DQ_MISSING_EVALUATED", "model_id": 1, "actor": null, "details": {"feature": "zipcode_admin", "missing_rate": 0.22, "severity": "high", "metric_id": 40}, "created_at": "2025-10-20T15:32:19.247388"}
+{"id": 78, "action": "ALERT_CREATED", "model_id": 1, "actor": null, "details": {"alert_id": 18, "severity": "high", "feature": "zipcode_admin", "type": "dq"}, "created_at": "2025-10-20T15:32:19.315177"}
+{"id": 79, "action": "ALERT_RESOLVED", "model_id": 1, "actor": null, "details": {"alert_id": 1}, "created_at": "2025-10-20T15:33:04.132047"}
+{"id": 80, "action": "ALERTS_RESOLVED_BULK", "model_id": 2, "actor": "alice", "details": {"count": 1}, "created_at": "2025-10-20T15:33:24.682147"}
+{"id": 81, "action": "ALERTS_RESOLVED_BULK", "model_id": 5, "actor": "alice", "details": {"count": 2}, "created_at": "2025-10-20T15:33:54.722444"}
+{"id": 82, "action": "SET_BASELINE", "model_id": 1, "actor": null, "details": {"feature": "age_bucket_admin", "metric_id": 41}, "created_at": "2025-10-20T15:41:58.127253"}
+{"id": 83, "action": "DRIFT_EVALUATED", "model_id": 1, "actor": null, "details": {"feature": "age_bucket_admin", "psi": 0.35201092946855816, "severity": "high", "metric_id": 42}, "created_at": "2025-10-20T15:41:58.220985"}
+{"id": 84, "action": "ALERT_CREATED", "model_id": 1, "actor": null, "details": {"alert_id": 19, "severity": "high", "feature": "age_bucket_admin"}, "created_at": "2025-10-20T15:41:58.286361"}

@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>MLOps Governance — Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<style>
+  :root { --bg:#0f172a; --card:#111827; --muted:#94a3b8; --text:#e5e7eb; --accent:#22d3ee; --danger:#f43f5e; --ok:#22c55e }
+  *{box-sizing:border-box} body{margin:0; font:14px/1.4 system-ui,Segoe UI,Roboto,sans-serif; background:#0b1020; color:var(--text)}
+  header{padding:14px 18px; background:var(--bg); border-bottom:1px solid #1f2937; display:flex; gap:12px; align-items:center}
+  header h1{font-size:16px; margin:0; letter-spacing:.3px}
+  .badge{padding:2px 8px; border-radius:999px; font-size:12px; background:#0b3751; color:#7dd3fc}
+  main{padding:16px; display:grid; gap:16px; grid-template-columns: 340px 1fr}
+  .card{background:var(--card); border:1px solid #1f2937; border-radius:12px; padding:14px}
+  .card h2{margin:0 0 8px 0; font-size:14px; color:#d1d5db}
+  .row{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+  input,select,button,textarea{background:#0b1222; color:var(--text); border:1px solid #233149; border-radius:8px; padding:8px 10px}
+  input,select,textarea{width:100%}
+  button{cursor:pointer}
+  button.primary{background:#0b2a36; border-color:#164e63}
+  button.accent{background:#082e2e; border-color:#155e75; color:#99f6e4}
+  button.danger{background:#2a0b16; border-color:#7f1d1d; color:#fecaca}
+  table{width:100%; border-collapse:collapse}
+  th,td{padding:8px 10px; border-bottom:1px solid #1f2937; vertical-align:top}
+  th{color:#9ca3af; text-align:left}
+  .sev-high{color:#fecaca}
+  .sev-medium{color:#fde68a}
+  .sev-low{color:#c7d2fe}
+  .status-open{color:#93c5fd}
+  .status-acknowledged{color:#fde68a}
+  .status-resolved{color:#86efac}
+  .muted{color:var(--muted)}
+  .pill{padding:2px 8px; border-radius:999px; border:1px solid #334155; font-size:12px}
+  .col{display:flex; flex-direction:column; gap:8px}
+  .hr{height:1px; background:#1f2937; margin:8px 0}
+  .hint{font-size:12px; color:#9ca3af}
+  .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
+</style>
+</head>
+<body>
+<header>
+  <h1>MLOps Governance — Admin</h1>
+  <span class="badge">runtime</span>
+</header>
+
+<main>
+  <!-- LEFT COLUMN -->
+  <div class="col">
+    <div class="card">
+      <h2>Login</h2>
+      <div class="row">
+        <input id="login-user" placeholder="username" value="alice"/>
+        <select id="login-role">
+          <option>admin</option><option>approver</option><option>viewer</option>
+        </select>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <button class="primary" onclick="login()">Sign in</button>
+        <span id="login-status" class="hint"></span>
+      </div>
+      <div class="hint mono" id="token-preview" style="margin-top:6px;"></div>
+    </div>
+
+    <div class="card">
+      <h2>Models</h2>
+      <div class="row">
+        <select id="model-select"></select>
+        <button onclick="loadModels()">Refresh</button>
+      </div>
+      <div class="row">
+        <button class="primary" onclick="loadAlerts()">Load Alerts</button>
+        <button onclick="summary()">Summary</button>
+      </div>
+      <div class="hint" id="summary-box"></div>
+    </div>
+
+    <div class="card">
+      <h2>Alert Ops</h2>
+      <div class="row">
+        <button onclick="ackSelected()">ACK selected</button>
+        <button class="primary" onclick="resolveSelected()">Resolve selected</button>
+      </div>
+      <div class="row">
+        <input id="comment-text" placeholder="add a comment…"/>
+        <button onclick="commentSelected()">Comment</button>
+      </div>
+      <div class="row">
+        <button class="danger" onclick="resolveAll()">Resolve ALL for model</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Slack</h2>
+      <div class="row">
+        <input id="slack-url" placeholder="https://hooks.slack.com/services/…"/>
+      </div>
+      <div class="row">
+        <button onclick="saveSlack()">Save</button>
+        <button class="accent" onclick="testSlack()">Test</button>
+      </div>
+      <div class="hint" id="slack-hint"></div>
+    </div>
+
+    <div class="card">
+      <h2>Scheduler</h2>
+      <div class="row">
+        <button onclick="monitorRun()">Run monitor now</button>
+      </div>
+      <div class="hint">Runs one pass using current snapshots & baselines.</div>
+    </div>
+
+    <div class="card">
+      <h2>Quick Tests</h2>
+      <div class="row">
+        <button class="primary" onclick="dqMissing()">DQ Missing (22%)</button>
+        <button onclick="psiDrift()">PSI Drift</button>
+      </div>
+      <div class="hint">These call your existing API to induce alerts for demo.</div>
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div class="card" style="min-height:420px">
+    <h2>Alerts</h2>
+    <div class="row" style="margin-bottom:8px">
+      <span class="hint">Click a row to select; actions apply to the selection.</span>
+    </div>
+    <table id="alerts-table">
+      <thead>
+        <tr>
+          <th style="width:70px">ID</th>
+          <th>Type</th>
+          <th>Severity</th>
+          <th>Status</th>
+          <th>Message</th>
+          <th>Created</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <div class="hint" id="alerts-hint" style="margin-top:8px"></div>
+  </div>
+</main>
+
+<script>
+const Base = location.origin; // same origin as API
+let token = localStorage.getItem("mlops_token") || "";
+let selectedAlertId = null;
+
+// ------------- helpers -------------
+function authHeaders() {
+  if (!token) return { "Content-Type":"application/json" };
+  return { "Content-Type":"application/json", "Authorization":"Bearer " + token };
+}
+function setStatus(id, text) { const el = document.getElementById(id); if (el) el.textContent = text || ""; }
+function fmtTS(s){ if(!s) return ""; try{return new Date(s).toLocaleString()}catch(e){return s} }
+function byId(id){ return document.getElementById(id); }
+
+// ------------- login -------------
+async function login() {
+  const username = byId("login-user").value || "alice";
+  const role = byId("login-role").value || "admin";
+  const res = await fetch(Base + "/auth/login", {
+    method:"POST", headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ username, role })
+  });
+  if (!res.ok) { setStatus("login-status","login failed"); return; }
+  const data = await res.json();
+  token = data.access_token; localStorage.setItem("mlops_token", token);
+  setStatus("login-status","signed in as "+username+" ("+role+")");
+  byId("token-preview").textContent = (token || "").slice(0,28) + (token ? "…" : "");
+  loadModels();
+}
+
+// ------------- models -------------
+async function loadModels() {
+  const res = await fetch(Base + "/api/models", { headers: authHeaders() });
+  const data = await res.json();
+  const sel = byId("model-select");
+  sel.innerHTML = "";
+  data.forEach(m => {
+    const opt = document.createElement("option");
+    opt.value = m.id; opt.textContent = `#${m.id} — ${m.name} [${m.stage}]`;
+    sel.appendChild(opt);
+  });
+  if (data.length) { sel.value = data[0].id; await loadAlerts(); }
+}
+
+// ------------- alerts -------------
+async function loadAlerts() {
+  const mid = byId("model-select").value;
+  const res = await fetch(Base + `/api/alerts?model_id=${mid}`, { headers: authHeaders() });
+  const rows = await res.json();
+  const tbody = byId("alerts-table").querySelector("tbody");
+  tbody.innerHTML = "";
+  selectedAlertId = null;
+  rows.forEach(a => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="mono">${a.id}</td>
+      <td>${a.type}</td>
+      <td class="mono ${"sev-"+a.severity}">${a.severity}</td>
+      <td class="mono ${"status-"+a.status}">${a.status}</td>
+      <td>${a.message}</td>
+      <td class="mono">${fmtTS(a.created_at)}</td>`;
+    tr.onclick = () => {
+      [...tbody.children].forEach(r => r.style.background = "");
+      tr.style.background = "#0e1a2f";
+      selectedAlertId = a.id;
+    };
+    tbody.appendChild(tr);
+  });
+  setStatus("alerts-hint", rows.length ? `${rows.length} alert(s)` : "No alerts");
+}
+
+async function ackSelected(){
+  if(!selectedAlertId){ alert("Select a row first"); return; }
+  const res = await fetch(Base + `/api/alerts/${selectedAlertId}/ack`, { method:"POST", headers: authHeaders() });
+  if(res.ok){ await loadAlerts(); } else { alert("ACK failed"); }
+}
+async function resolveSelected(){
+  if(!selectedAlertId){ alert("Select a row first"); return; }
+  const res = await fetch(Base + `/api/alerts/${selectedAlertId}/resolve`, { method:"POST", headers: authHeaders() });
+  if(res.ok){ await loadAlerts(); } else { alert("Resolve failed"); }
+}
+async function commentSelected(){
+  if(!selectedAlertId){ alert("Select a row first"); return; }
+  const txt = byId("comment-text").value.trim();
+  if(!txt){ alert("Enter a comment"); return; }
+  const res = await fetch(Base + `/api/alerts/${selectedAlertId}/comment`, {
+    method:"POST", headers: authHeaders(), body: JSON.stringify({ comment: txt })
+  });
+  if(res.ok){ byId("comment-text").value=""; alert("Comment added (see audit)"); }
+  else { alert("Comment failed"); }
+}
+async function resolveAll(){
+  const mid = byId("model-select").value;
+  if(!confirm("Resolve ALL alerts for this model?")) return;
+  const res = await fetch(Base + `/api/models/${mid}/alerts/resolve_all`, { method:"POST", headers: authHeaders() });
+  if(res.ok){ await loadAlerts(); } else { alert("Resolve-all failed"); }
+}
+
+async function summary(){
+  const mid = byId("model-select").value;
+  const res = await fetch(Base + `/api/models/${mid}/alerts/summary`, { headers: authHeaders() });
+  if(!res.ok){ setStatus("summary-box","summary failed"); return; }
+  const s = await res.json();
+  setStatus("summary-box", `total ${s.total} — status: ${JSON.stringify(s.by_status)} — severity: ${JSON.stringify(s.by_severity)}`);
+}
+
+// ------------- slack -------------
+async function saveSlack(){
+  const url = byId("slack-url").value.trim();
+  if(!url){ alert("Enter webhook URL"); return; }
+  const res = await fetch(Base + "/config/slack-webhook", {
+    method:"POST", headers: authHeaders(), body: JSON.stringify({ webhook_url: url })
+  });
+  const d = await res.json();
+  setStatus("slack-hint", d.saved ? "Webhook saved" : "Save failed");
+}
+async function testSlack(){
+  const res = await fetch(Base + "/debug/slack", { method:"POST", headers: authHeaders() });
+  const d = await res.json();
+  setStatus("slack-hint", `sent=${d.sent} configured=${d.configured}`);
+}
+
+// ------------- scheduler -------------
+async function monitorRun(){
+  const res = await fetch(Base + "/admin/monitor/run", { method:"POST", headers: authHeaders() });
+  if(res.ok){ await loadAlerts(); } else { alert("Monitor run failed"); }
+}
+
+// ------------- quick tests -------------
+async function dqMissing(){
+  const mid = byId("model-select").value;
+  const body = { feature:"zipcode_admin", total_count:1000, missing_count:220 };
+  const res = await fetch(Base + `/api/models/${mid}/drift/dq/missing`, {
+    method:"POST", headers: authHeaders(), body: JSON.stringify(body)
+  });
+  await loadAlerts();
+}
+async function psiDrift(){
+  const mid = byId("model-select").value;
+  // baseline first (idempotent if it exists)
+  await fetch(Base + `/api/models/${mid}/drift/baseline`, {
+    method:"POST", headers: authHeaders(),
+    body: JSON.stringify({ feature:"age_bucket_admin", expected:[0.10,0.20,0.30,0.25,0.15] })
+  });
+  // evaluate drift
+  await fetch(Base + `/api/models/${mid}/drift/psi`, {
+    method:"POST", headers: authHeaders(),
+    body: JSON.stringify({ feature:"age_bucket_admin", actual:[0.05,0.10,0.18,0.32,0.35] })
+  });
+  await loadAlerts();
+}
+
+// ------------- boot -------------
+(function init(){
+  if(token){ byId("token-preview").textContent = (token||"").slice(0,28) + "…"; }
+  loadModels().catch(()=>{ /* ignore until login */ });
+})();
+</script>
+</body>
+</html>
