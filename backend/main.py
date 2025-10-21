@@ -220,6 +220,33 @@ class SLOCheckIn(BaseModel):
     tracking_uri: Optional[str] = None
     run_id: Optional[str] = None
 
+@app.get("/api/models/{model_id}/slo", response_model=dict)
+def api_get_slo(model_id: int, db: Session = Depends(get_db),
+                user=Depends(require_role("viewer","approver","admin"))):
+    m = db.get(ModelDB, model_id)
+    if not m:
+        raise HTTPException(404, "Model not found")
+    meta = dict(getattr(m, "model_metadata", {}) or {})
+    slo = dict(meta.get("slo", {}) or {})
+    return {
+        "thresholds": slo.get("thresholds") or {},
+        "directions": slo.get("directions") or {},
+        "severity":   slo.get("severity")   or {},
+    }
+
+@app.delete("/api/models/{model_id}/slo", response_model=dict)
+def api_clear_slo(model_id: int, db: Session = Depends(get_db),
+                  user=Depends(require_role("admin"))):
+    m = db.get(ModelDB, model_id)
+    if not m:
+        raise HTTPException(404, "Model not found")
+    meta = dict(getattr(m, "model_metadata", {}) or {})
+    if "slo" in meta:
+        meta.pop("slo", None)
+        m.model_metadata = meta
+        db.commit(); db.refresh(m)
+        record_audit(db, "SLO_THRESHOLDS_CLEARED", model_id, getattr(user,"username",None), {})
+    return {"cleared": True}
 
 @app.post("/api/models/{model_id}/slo/thresholds", response_model=dict)
 def api_set_slo_thresholds(model_id: int, body: SLOThresholdsIn,

@@ -1,19 +1,26 @@
-from typing import Any, Dict, List, Set
-from sqlalchemy.orm import Session
+# app/crud/approval.py
+from typing import Any, Dict, List, Set, Optional
 from datetime import datetime
+from sqlalchemy.orm import Session
+
 from app.models.approval import ApprovalRequest
 from app.models.model import Model
 from app.services.audit import record_audit
-from app.utils.policy import evaluate_promotion_policy
+from app.utils.policy import explain_policy 
 
 VALID_TARGETS = {"staging", "production"}
 VALID_DECISIONS = {"approved", "rejected"}
 
+# Quorum per target
 MIN_UNIQUE_APPROVERS = {"staging": 1, "production": 2}
+
+# Governance knobs
 ALLOW_REQUESTER_TO_APPROVE = False
 ALLOW_DUPLICATE_DECISIONS = False
 
-def request_promotion(db: Session, model_id: int, target: str, justification: str, requested_by: str):
+
+def request_promotion(db: Session, model_id: int, target: str, justification: str, requested_by: str) -> ApprovalRequest:
+    """Create a promotion approval request."""
     target = (target or "").strip().lower()
     if target not in VALID_TARGETS:
         raise ValueError(f"Invalid target '{target}'. Must be one of {sorted(VALID_TARGETS)}.")
@@ -22,35 +29,57 @@ def request_promotion(db: Session, model_id: int, target: str, justification: st
     if not m:
         raise ValueError(f"Model {model_id} not found")
 
-    req = ApprovalRequest(model_id=model_id, target=target, justification=justification, requested_by=requested_by)
+    # Optional: avoid no-op requests (already in desired stage)
+    try:
+        if getattr(m, "stage", None) == target:
+            raise ValueError(f"Model already in '{target}'")
+    except Exception:
+        pass
+
+    req = ApprovalRequest(
+        model_id=model_id,
+        target=target,
+        justification=justification,
+        requested_by=requested_by,
+    )
     db.add(req)
     db.commit()
     db.refresh(req)
-    record_audit(db, "REQUEST_PROMOTION", model_id, requested_by,
-             {"target": target, "justification": justification, "approval_id": req.id})
+
+    record_audit(
+        db,
+        "REQUEST_PROMOTION",
+        model_id,
+        requested_by,
+        {"target": target, "justification": justification, "approval_id": req.id},
+    )
     return req
 
-def add_decision(db: Session, approval_id: int, decided_by: str, decision: str, note: str | None = None):
+
+def add_decision(db: Session, approval_id: int, decided_by: str, decision: str, note: Optional[str] = None) -> ApprovalRequest:
+    """Record an approval/rejection; on quorum, enforce policy, then flip stage."""
     req = db.get(ApprovalRequest, approval_id)
     if not req:
         raise ValueError(f"Approval {approval_id} not found")
-    
-    if req.status != "pending":
+
+    # Terminal states: do nothing
+    if req.status in ("approved", "rejected", "blocked", "completed"):
         return req
-    
+
     d = (decision or "").strip().lower()
     if d not in VALID_DECISIONS:
         raise ValueError(f"Invalid decision '{decision}'. Must be one of {sorted(VALID_DECISIONS)}.")
 
-    # SoD: requester cannot approve own request
+    # SoD: requester cannot approve their own request (unless allowed)
     if not ALLOW_REQUESTER_TO_APPROVE and req.requested_by and decided_by.lower() == str(req.requested_by).lower():
         raise ValueError("Requester cannot approve their own promotion request")
 
-    # Prevent duplicate decisions by same user (unless allowed)
+    # Prevent duplicate decisions by the same reviewer (unless allowed)
     prev_by: Set[str] = {str(x.get("by", "")).lower() for x in (req.decisions or [])}
     if not ALLOW_DUPLICATE_DECISIONS and decided_by.lower() in prev_by:
         raise ValueError(f"Reviewer '{decided_by}' has already recorded a decision for this request")
 
+    # Append this decision
     decisions: List[Dict[str, Any]] = list(req.decisions or [])
     decisions.append(
         {
@@ -62,12 +91,11 @@ def add_decision(db: Session, approval_id: int, decided_by: str, decision: str, 
     )
     req.decisions = decisions
 
-   # If any reviewer explicitly rejects → request becomes rejected immediately
+    # Immediate reject path
     if d == "rejected":
         req.status = "rejected"
         db.commit()
         db.refresh(req)
-
         record_audit(
             db,
             "DECIDE_PROMOTION",
@@ -77,57 +105,70 @@ def add_decision(db: Session, approval_id: int, decided_by: str, decision: str, 
         )
         return req
 
-    # Count unique approvals for quorum
+    # Count unique approvals towards quorum
     approved_by: Set[str] = {str(x["by"]).lower() for x in decisions if x.get("decision") == "approved"}
-    needed = MIN_UNIQUE_APPROVERS[req.target]
+    needed = MIN_UNIQUE_APPROVERS.get(req.target, 1)
     approvals_count = len(approved_by)
 
-    # Record the decision event
+    # Log the approval decision (may still be pending)
     record_audit(
         db,
         "DECIDE_PROMOTION",
         req.model_id,
         decided_by,
-        {"approval_id": approval_id, "decision": "approved", "note": note or "", "approvals": approvals_count, "needed": needed},
+        {
+            "approval_id": approval_id,
+            "decision": "approved",
+            "note": note or "",
+            "approvals": approvals_count,
+            "needed": needed,
+        },
     )
 
     if approvals_count < needed:
         # Still pending; wait for more approvals
+        req.status = "pending"
         db.commit()
         db.refresh(req)
         return req
 
-    # === Quorum satisfied → POLICY GATE ===
-    evalr = evaluate_promotion_policy(db, req.model_id, req.target)
-    if not evalr["pass"]:
-        req.status = "rejected"
+    # === Quorum satisfied → POLICY GATE (before changing the stage) ===
+    record_audit(
+        db,
+        "APPROVAL_QUORUM_MET",
+        req.model_id,
+        decided_by,
+        {"approval_id": approval_id, "target": req.target, "approvals": approvals_count},
+    )
+
+    pol = explain_policy(db, req.model_id, req.target)
+    if not pol.get("allow", False):
+        # Distinguish policy block from human rejection
+        req.status = "blocked"
         db.commit()
         db.refresh(req)
-
         record_audit(
             db,
-            "POLICY_BLOCKED",
+            "POLICY_BLOCK",
             req.model_id,
             decided_by,
-            {"approval_id": approval_id, "reasons": evalr["failures"], "target": req.target, "policy_hash": evalr.get("policy_hash")},
+            {"approval_id": approval_id, "blocks": pol.get("blocks", []), "target": req.target},
         )
         return req
 
-    # Passed policy (maybe via waivers)
-    if evalr.get("waivers_used"):
-        record_audit(db, "POLICY_WAIVER_USED", req.model_id, decided_by,
-                     {"approval_id": approval_id, "waivers": evalr["waivers_used"], "target": req.target, "policy_hash": evalr.get("policy_hash")})
-
-    # Finalize and flip stage
-    req.status = "approved"
+    # Passed policy → flip stage
     model = db.get(Model, req.model_id)
     if model:
-        model.stage = req.target
+        try:
+            model.stage = req.target  # if Enum, your Model setter can coerce
+        except Exception:
+            model.stage = req.target
         try:
             setattr(model, "updated_at", datetime.utcnow())
         except Exception:
             pass
 
+    req.status = "approved"
     db.commit()
     db.refresh(req)
 
@@ -136,6 +177,6 @@ def add_decision(db: Session, approval_id: int, decided_by: str, decision: str, 
         "STAGE_CHANGED",
         model.id if model else None,
         decided_by,
-        {"new_stage": model.stage, "approval_id": approval_id},
+        {"new_stage": getattr(model, "stage", req.target), "approval_id": approval_id},
     )
     return req

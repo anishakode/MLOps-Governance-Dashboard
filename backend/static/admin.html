@@ -111,6 +111,42 @@
     </div>
 
     <div class="card">
+    <h2>SLO checks</h2>
+    <div class="row">
+      <div class="col" style="gap:6px; width:100%">
+        <div class="row">
+          <label class="muted" style="min-width:130px">AUC ≥</label>
+          <input id="slo-auc" placeholder="0.80" />
+        </div>
+        <div class="row">
+          <label class="muted" style="min-width:130px">F1 ≥</label>
+          <input id="slo-f1" placeholder="0.75" />
+        </div>
+        <div class="row">
+          <label class="muted" style="min-width:130px">p95 latency (ms) ≤</label>
+          <input id="slo-lat-ms" placeholder="200" />
+        </div>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:8px">
+      <button class="primary" onclick="sloSave()">Save thresholds</button>
+      <button onclick="sloLoad()">Load</button>
+      <button class="danger" onclick="sloClear()">Clear</button>
+    </div>
+
+  <div class="hr"></div>
+
+  <div class="row">
+    <button onclick="sloCheckMeta()">Check (use metadata)</button>
+    <button onclick="sloCheckManual()">Check (manual metrics)</button>
+    <button class="accent" onclick="sloBreachQuick()">Quick breach test</button>
+  </div>
+
+  <div class="hint" id="slo-hint" style="margin-top:6px"></div>
+</div>
+
+    <div class="card">
       <h2>Quick Tests</h2>
       <div class="row">
         <button class="primary" onclick="dqMissing()">DQ Missing (22%)</button>
@@ -333,6 +369,104 @@ async function psiDrift(){
   if(token){ byId("token-preview").textContent = (token||"").slice(0,28) + "…"; }
   loadModels().catch(()=>{ /* ignore until login */ });
 })();
+
+function mid(){ return byId("model-select").value; }
+function n(x){ const v = parseFloat(x); return isFinite(v) ? v : undefined; }
+
+async function sloLoad(){
+  const res = await fetch(Base + `/api/models/${mid()}/slo`, { headers: authHeaders() });
+  if(!res.ok){ setStatus("slo-hint","load failed"); return; }
+  const d = await res.json();
+  const thr = d.thresholds || {};
+  byId("slo-auc").value    = (thr.auc ?? "");
+  byId("slo-f1").value     = (thr.f1 ?? "");
+  byId("slo-lat-ms").value = (thr.latency_p95_ms ?? "");
+  setStatus("slo-hint","loaded");
+}
+
+async function sloSave(){
+  const thresholds = {};
+  const auc = n(byId("slo-auc").value);
+  const f1  = n(byId("slo-f1").value);
+  const p95 = n(byId("slo-lat-ms").value);
+  if(auc !== undefined) thresholds.auc = auc;
+  if(f1  !== undefined) thresholds.f1  = f1;
+  if(p95 !== undefined) thresholds.latency_p95_ms = p95;
+
+  if(!Object.keys(thresholds).length){ alert("Enter at least one threshold"); return; }
+
+  const body = { thresholds: thresholds, directions: { latency_p95_ms: "le" } };
+  const res = await fetch(Base + `/api/models/${mid()}/slo/thresholds`, {
+    method:"POST", headers: authHeaders(), body: JSON.stringify(body)
+  });
+  const d = await res.json();
+  if(res.ok){ setStatus("slo-hint", `saved: ${d.threshold_keys.join(", ")}`) }
+  else { setStatus("slo-hint", "save failed"); }
+}
+
+async function sloClear(){
+  if(!confirm("Clear SLO thresholds for this model?")) return;
+  const res = await fetch(Base + `/api/models/${mid()}/slo`, { method:"DELETE", headers: authHeaders() });
+  if(res.ok){ setStatus("slo-hint","cleared"); }
+  else { setStatus("slo-hint","clear failed"); }
+}
+
+async function sloCheckMeta(){
+  const res = await fetch(Base + `/api/models/${mid()}/slo/check`, {
+    method:"POST", headers: authHeaders(), body: "{}"
+  });
+  const d = await res.json();
+  if(res.ok){
+    const extra = d.severity ? ` • severity=${d.severity}` : "";
+    setStatus("slo-hint", `violations=${d.violations}${extra} (metric_id=${d.metric_id}${d.alert_id? " alert_id="+d.alert_id:""})`);
+    await loadAlerts();
+  } else {
+    setStatus("slo-hint","check failed: "+(d.detail||res.statusText));
+  }
+}
+
+async function sloCheckManual(){
+  // read manual *metrics* from the same inputs you used as thresholds (demo-friendly)
+  const metrics = {};
+  const auc = n(byId("slo-auc").value);
+  const f1  = n(byId("slo-f1").value);
+  const p95 = n(byId("slo-lat-ms").value);
+  if(auc !== undefined) metrics.auc = auc;
+  if(f1  !== undefined) metrics.f1  = f1;
+  if(p95 !== undefined) metrics.latency_p95_ms = p95;
+
+  if(!Object.keys(metrics).length){ alert("Enter at least one metric value"); return; }
+
+  const res = await fetch(Base + `/api/models/${mid()}/slo/check`, {
+    method:"POST", headers: authHeaders(), body: JSON.stringify({ metrics })
+  });
+  const d = await res.json();
+  if(res.ok){
+    const extra = d.severity ? ` • severity=${d.severity}` : "";
+    setStatus("slo-hint", `violations=${d.violations}${extra} (metric_id=${d.metric_id}${d.alert_id? " alert_id="+d.alert_id:""})`);
+    await loadAlerts();
+  } else {
+    setStatus("slo-hint","check failed: "+(d.detail||res.statusText));
+  }
+}
+
+async function sloBreachQuick(){
+  // 1) set thresholds (idempotent)
+  const thr = { thresholds: { auc: 0.80, f1: 0.75, latency_p95_ms: 200 }, directions: { latency_p95_ms: "le" } };
+  await fetch(Base + `/api/models/${mid()}/slo/thresholds`, {
+    method:"POST", headers: authHeaders(), body: JSON.stringify(thr)
+  });
+
+  // 2) sync *bad* metrics into model metadata (so status pages also reflect activity)
+  await fetch(Base + `/api/integrations/mlflow/sync`, {
+    method:"POST", headers: authHeaders(),
+    body: JSON.stringify({ model_id: parseInt(mid()), metrics: { auc: 0.74, f1: 0.71, latency_p95_ms: 240 } })
+  });
+
+  // 3) run the check (metadata-based)
+  await sloCheckMeta();
+}
+
 </script>
 </body>
 </html>
