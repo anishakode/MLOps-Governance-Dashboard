@@ -514,3 +514,137 @@ def eval_dq_range(
                          {"reason": "duplicate_within_cooldown", "cooldown_min": int(os.getenv("ALERT_COOLDOWN_MIN", "30")),
                           "feature": feature, "severity": severity, "type": "dq", "kind": "range"})
     return {"out_of_range_frac": frac, "severity": severity, "metric_id": mm.id, "alert_id": getattr(alert_obj, "id", None)}
+
+# --- SLO CHECKS ---------------------------------------------------------------
+
+def _dir_for_metric(name: str, directions: Optional[Dict[str, str]] = None) -> str:
+    """
+    Decide comparison direction. 'ge' = metric must be >= target; 'le' = <= target.
+    Heuristics: latency/p95/xxx_ms -> 'le'; otherwise 'ge'. Overridden by directions[name].
+    """
+    if directions and name in directions:
+        d = directions[name].lower()
+        return "le" if d in ("le","lte","<=") else "ge"
+    lower = name.lower()
+    if "latency" in lower or "p95" in lower or lower.endswith("_ms"):
+        return "le"
+    return "ge"
+
+def _violation_severity(value: float, target: float, direction: str,
+                        prefer: Optional[str] = None) -> str:
+    """
+    Compute gap ratio and map to medium/high (simple rule).
+    prefer can be 'high' to force high severity for this metric.
+    """
+    if prefer in ("high","medium"):
+        return prefer
+    # gap as % of target; cap to avoid silly numbers
+    if direction == "ge":
+        gap = max(0.0, (target - value) / max(1e-12, target))
+    else:
+        gap = max(0.0, (value - target) / max(1e-12, target))
+    if gap >= 0.15:
+        return "high"
+    if gap >= 0.05:
+        return "medium"
+    return "low"
+
+def eval_slo(db: Session, model_id: int,
+             metrics: Dict[str, float],
+             thresholds: Dict[str, float],
+             directions: Optional[Dict[str, str]] = None,
+             per_metric_severity: Optional[Dict[str, str]] = None) -> Tuple[MonitoringMetric, Optional[Alert]]:
+    """
+    Compare current metrics with SLO thresholds. Creates MonitoringMetric(method='slo_check').
+    If any breach medium/high, raises Alert(type='slo') with cooldown and Slack.
+    """
+    violations = []
+    worst_sev = "low"
+
+    for k, target in thresholds.items():
+        if k not in metrics:
+            continue
+        v = float(metrics[k])
+        direc = _dir_for_metric(k, directions)
+        ok = (v >= target) if direc == "ge" else (v <= target)
+        if not ok:
+            sev = _violation_severity(v, float(target), direc,
+                                      (per_metric_severity or {}).get(k))
+            violations.append({
+                "metric": k, "value": v, "target": float(target),
+                "direction": direc, "severity": sev
+            })
+            if sev == "high":
+                worst_sev = "high"
+            elif sev == "medium" and worst_sev != "high":
+                worst_sev = "medium"
+
+    mm = MonitoringMetric(
+        model_id=model_id,
+        feature="__slo__",           # placeholder; not a feature drift metric
+        method="slo_check",
+        value=str(len(violations)),
+        details={"thresholds": thresholds, "metrics": metrics, "violations": violations},
+    )
+    db.add(mm); db.commit(); db.refresh(mm)
+    record_audit(db, "SLO_CHECK", model_id, None, {"metric_id": mm.id, "violations": len(violations)})
+
+    alert_obj: Optional[Alert] = None
+    if violations and worst_sev in ("medium","high"):
+        # cooldown de-dupe for SLO alerts
+        since = datetime.utcnow() - timedelta(minutes=COOLDOWN_MIN)
+        recent_open = (
+            db.query(Alert)
+            .filter(
+                Alert.model_id == model_id,
+                Alert.type == "slo",
+                Alert.severity == worst_sev,
+                Alert.status == "open",
+                Alert.created_at >= since,
+            ).all()
+        )
+        duplicate = len(recent_open) > 0
+
+        if not duplicate:
+            # craft message with first 1–2 violations
+            parts = []
+            for v in violations[:2]:
+                sym = "<" if v["direction"] == "ge" else ">"
+                parts.append(f"{v['metric']} {v['value']:.3g} {sym} {v['target']:.3g}")
+            more = "" if len(violations) <= 2 else f" (+{len(violations)-2} more)"
+            msg = f"SLO breach: " + "; ".join(parts) + more
+
+            alert_obj = Alert(
+                model_id=model_id,
+                type="slo",
+                severity=worst_sev,
+                message=msg,
+                details={"violations": violations, "metric_id": mm.id},
+            )
+            db.add(alert_obj); db.commit(); db.refresh(alert_obj)
+            record_audit(db, "ALERT_CREATED", model_id, None,
+                         {"alert_id": alert_obj.id, "severity": worst_sev, "type": "slo"})
+
+            # Slack notify (best-effort)
+            try:
+                sev_emoji = {"high": "🚨", "medium": "⚠️"}.get(worst_sev, "ℹ️")
+                payload = {
+                    "blocks": [
+                        {"type":"header","text":{"type":"plain_text","text":f"{sev_emoji} SLO Alert — {worst_sev.upper()}","emoji":True}},
+                        {"type":"section","fields":[
+                            {"type":"mrkdwn","text":f"*Model ID:*\n{model_id}"},
+                            {"type":"mrkdwn","text":f"*Violations:*\n{len(violations)}"},
+                        ]},
+                        {"type":"section","text":{"type":"mrkdwn",
+                         "text":"\n".join([f"• *{v['metric']}* {('<' if v['direction']=='ge' else '>')} {v['target']} (got {v['value']})"
+                                           for v in violations[:5]])}},
+                    ]
+                }
+                _slack_send(payload)
+            except Exception:
+                pass
+        else:
+            record_audit(db, "ALERT_SUPPRESSED", model_id, None,
+                         {"reason":"duplicate_within_cooldown","cooldown_min":COOLDOWN_MIN,"type":"slo","severity":worst_sev})
+
+    return mm, alert_obj

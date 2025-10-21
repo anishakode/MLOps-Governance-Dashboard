@@ -19,7 +19,7 @@ from app.models.model import Model as ModelDB, ModelStage, ModelStatus
 from app.crud.model import model_crud
 from app.crud.approval import request_promotion, add_decision, ApprovalRequest
 from app.models.audit import AuditLog
-from app.crud.monitoring import set_psi_baseline, eval_psi, list_alerts, resolve_alert,_slack_send, eval_ks, eval_dq_missing, eval_dq_range, set_dq_thresholds
+from app.crud.monitoring import eval_slo, set_psi_baseline, eval_psi, list_alerts, resolve_alert,_slack_send, eval_ks, eval_dq_missing, eval_dq_range, set_dq_thresholds
 from app.models.monitoring import MonitoringMetric, Alert
 from app.utils.runtime_config import set_slack_webhook, get_slack_webhook
 from app.utils.report import generate_audit_pack
@@ -187,7 +187,7 @@ def create_promotion(model_id: int, payload: PromotionRequest, db: Session = Dep
 
 class Decision(BaseModel):
     decided_by: str
-    decision: str               # "approved" | "rejected"
+    decision: str               
     note: Optional[str] = None
 
 @app.post("/api/models/{model_id}/alerts/resolve_all", response_model=dict)
@@ -209,6 +209,81 @@ def api_resolve_all_alerts(
     db.commit()
     record_audit(db, "ALERTS_RESOLVED_BULK", model_id, getattr(user, "username", None), {"count": count})
     return {"resolved": count}
+
+class SLOThresholdsIn(BaseModel):
+    thresholds: Dict[str, float]
+    directions: Optional[Dict[str, str]] = None 
+    severity: Optional[Dict[str, str]] = None       
+
+class SLOCheckIn(BaseModel):
+    metrics: Optional[Dict[str, float]] = None
+    tracking_uri: Optional[str] = None
+    run_id: Optional[str] = None
+
+
+@app.post("/api/models/{model_id}/slo/thresholds", response_model=dict)
+def api_set_slo_thresholds(model_id: int, body: SLOThresholdsIn,
+                           db: Session = Depends(get_db),
+                           user=Depends(require_role("admin"))):
+    m = db.get(ModelDB, model_id)
+    if not m:
+        raise HTTPException(404, "Model not found")
+    meta = dict(getattr(m, "model_metadata", {}) or {})
+    slo = dict(meta.get("slo", {}) or {})
+    slo["thresholds"] = body.thresholds
+    if body.directions: slo["directions"] = body.directions
+    if body.severity:   slo["severity"]   = body.severity
+    meta["slo"] = slo
+    m.model_metadata = meta
+    db.commit(); db.refresh(m)
+    record_audit(db, "SLO_THRESHOLDS_SET", model_id, getattr(user, "username", None), slo)
+    return {"saved": True, "threshold_keys": list(body.thresholds.keys())}
+
+@app.post("/api/models/{model_id}/slo/check", response_model=dict)
+def api_slo_check(model_id: int, body: SLOCheckIn,
+                  db: Session = Depends(get_db),
+                  user=Depends(require_role("approver","admin"))):
+    m = db.get(ModelDB, model_id)
+    if not m:
+        raise HTTPException(404, "Model not found")
+
+    # resolve thresholds from model metadata
+    meta = dict(getattr(m, "model_metadata", {}) or {})
+    slo = dict(meta.get("slo", {}) or {})
+    thresholds = slo.get("thresholds") or {}
+    if not thresholds:
+        raise HTTPException(400, "No SLO thresholds configured for this model")
+
+    directions = slo.get("directions") or {}
+    per_sev    = slo.get("severity") or {}
+
+    metrics: Dict[str, float] = {}
+    if body.metrics:
+        metrics = {k: float(v) for k, v in body.metrics.items()}
+    elif body.tracking_uri and body.run_id:
+        try:
+            client = MlflowClient(tracking_uri=body.tracking_uri)
+            run = client.get_run(body.run_id)
+            for k, v in run.data.metrics.items():
+                try: metrics[k] = float(v)
+                except: pass
+        except Exception as e:
+            print(f"[SLO] MLflow fetch failed: {e}")
+    if not metrics:
+        mf = ((meta.get("mlflow") or {}).get("metrics") or {})
+        metrics = {k: float(v) for k, v in mf.items() if isinstance(v, (int, float, str))}
+        # coerce strings
+        for k, v in list(metrics.items()):
+            try: metrics[k] = float(v)
+            except: metrics.pop(k, None)
+
+    if not metrics:
+        raise HTTPException(400, "No metrics available to evaluate SLO")
+
+    mm, alert = eval_slo(db, model_id, metrics, thresholds, directions, per_sev)
+    out = {"metric_id": mm.id, "violations": len(mm.details.get("violations") or [])}
+    if alert: out["alert_id"] = alert.id; out["severity"] = alert.severity
+    return out
 
 @app.post("/api/approvals/{approval_id}/decision", response_model=dict)
 def decide(approval_id: int, payload: Decision, db: Session = Depends(get_db), user=Depends(require_role("approver", "admin"))):
@@ -1112,6 +1187,18 @@ async def _monitor_loop():
 @app.get("/admin", include_in_schema=False)
 def admin_page():
     return FileResponse(STATIC_DIR / "admin.html")
+
+@app.get("/public/healthz", include_in_schema=False)
+def public_healthz(db: Session = Depends(get_db)):
+    try:
+        db.execute(text("SELECT 1"))
+        return {"status": "ok"}
+    except Exception as e:
+        return Response(content='{"status":"error"}', media_type="application/json", status_code=503)
+
+@app.get("/public/version", include_in_schema=False)
+def public_version():
+    return {"name": "mlops-governance-api", "version": "0.2.0"}
 
 @app.get("/public/status", response_model=list[dict], include_in_schema=False)
 def public_status(db: Session = Depends(get_db)):
