@@ -1,0 +1,471 @@
+{
+  "generated_at": "2025-10-21T23:40:56.723586",
+  "window": {
+    "start": "2025-10-20T23:40:56",
+    "end": "2025-10-21T23:40:56"
+  },
+  "model": {
+    "id": 2,
+    "name": "smoke_model_5987",
+    "description": "test",
+    "version": "1.0.0",
+    "stage": "production",
+    "status": "active",
+    "created_at": "2025-10-10T21:11:00.286132",
+    "updated_at": "2025-10-18T14:34:48.078109",
+    "model_metadata": {
+      "slo": {
+        "thresholds": {
+          "auc": 0.8,
+          "f1": 0.75,
+          "latency_p95_ms": 200.0
+        },
+        "directions": {
+          "latency_p95_ms": "le"
+        }
+      },
+      "mlflow": {
+        "metrics": {
+          "f1": 0.71,
+          "auc": 0.74,
+          "latency_p95_ms": 240.0
+        }
+      }
+    }
+  },
+  "approvals": [],
+  "audit_log": [
+    {
+      "id": 127,
+      "action": "ALERT_SUPPRESSED",
+      "model_id": 2,
+      "actor": null,
+      "details": {
+        "reason": "duplicate_within_cooldown",
+        "cooldown_min": 30,
+        "type": "slo",
+        "severity": "high"
+      },
+      "created_at": "2025-10-21T23:40:15.203570"
+    },
+    {
+      "id": 126,
+      "action": "SLO_CHECK",
+      "model_id": 2,
+      "actor": null,
+      "details": {
+        "metric_id": 51,
+        "violations": 3
+      },
+      "created_at": "2025-10-21T23:40:15.149955"
+    },
+    {
+      "id": 125,
+      "action": "SLO_THRESHOLDS_SET",
+      "model_id": 2,
+      "actor": "alice",
+      "details": {
+        "thresholds": {
+          "auc": 0.8,
+          "f1": 0.75,
+          "latency_p95_ms": 200.0
+        },
+        "directions": {
+          "latency_p95_ms": "le"
+        }
+      },
+      "created_at": "2025-10-21T23:40:15.032373"
+    },
+    {
+      "id": 124,
+      "action": "ALERT_SUPPRESSED",
+      "model_id": 2,
+      "actor": null,
+      "details": {
+        "reason": "duplicate_within_cooldown",
+        "cooldown_min": 30,
+        "type": "slo",
+        "severity": "high"
+      },
+      "created_at": "2025-10-21T23:40:06.209410"
+    },
+    {
+      "id": 123,
+      "action": "SLO_CHECK",
+      "model_id": 2,
+      "actor": null,
+      "details": {
+        "metric_id": 50,
+        "violations": 3
+      },
+      "created_at": "2025-10-21T23:40:06.193586"
+    },
+    {
+      "id": 122,
+      "action": "SLO_THRESHOLDS_SET",
+      "model_id": 2,
+      "actor": "alice",
+      "details": {
+        "thresholds": {
+          "auc": 0.8,
+          "f1": 0.75,
+          "latency_p95_ms": 200.0
+        },
+        "directions": {
+          "latency_p95_ms": "le"
+        }
+      },
+      "created_at": "2025-10-21T23:40:06.128950"
+    },
+    {
+      "id": 121,
+      "action": "ALERT_CREATED",
+      "model_id": 2,
+      "actor": null,
+      "details": {
+        "alert_id": 26,
+        "severity": "medium",
+        "type": "slo"
+      },
+      "created_at": "2025-10-21T23:39:29.298093"
+    },
+    {
+      "id": 120,
+      "action": "SLO_CHECK",
+      "model_id": 2,
+      "actor": null,
+      "details": {
+        "metric_id": 49,
+        "violations": 2
+      },
+      "created_at": "2025-10-21T23:39:29.244296"
+    },
+    {
+      "id": 119,
+      "action": "ALERT_CREATED",
+      "model_id": 2,
+      "actor": null,
+      "details": {
+        "alert_id": 25,
+        "severity": "high",
+        "type": "slo"
+      },
+      "created_at": "2025-10-21T23:38:55.496355"
+    },
+    {
+      "id": 118,
+      "action": "SLO_CHECK",
+      "model_id": 2,
+      "actor": null,
+      "details": {
+        "metric_id": 48,
+        "violations": 3
+      },
+      "created_at": "2025-10-21T23:38:55.438453"
+    },
+    {
+      "id": 117,
+      "action": "SLO_THRESHOLDS_SET",
+      "model_id": 2,
+      "actor": "alice",
+      "details": {
+        "thresholds": {
+          "auc": 0.9,
+          "f1": 0.8,
+          "latency_p95_ms": 180.0
+        },
+        "directions": {
+          "latency_p95_ms": "le"
+        }
+      },
+      "created_at": "2025-10-21T23:38:28.515789"
+    },
+    {
+      "id": 116,
+      "action": "ALERT_CREATED",
+      "model_id": 2,
+      "actor": null,
+      "details": {
+        "alert_id": 24,
+        "severity": "high",
+        "feature": "zipcode_admin",
+        "type": "dq"
+      },
+      "created_at": "2025-10-21T23:37:31.957163"
+    },
+    {
+      "id": 115,
+      "action": "DQ_MISSING_EVALUATED",
+      "model_id": 2,
+      "actor": null,
+      "details": {
+        "feature": "zipcode_admin",
+        "missing_rate": 0.22,
+        "severity": "high",
+        "metric_id": 47
+      },
+      "created_at": "2025-10-21T23:37:31.707735"
+    },
+    {
+      "id": 114,
+      "action": "ALERTS_RESOLVED_BULK",
+      "model_id": 2,
+      "actor": "alice",
+      "details": {
+        "count": 3
+      },
+      "created_at": "2025-10-21T23:18:06.023199"
+    },
+    {
+      "id": 96,
+      "action": "ALERT_CREATED",
+      "model_id": 2,
+      "actor": null,
+      "details": {
+        "alert_id": 22,
+        "severity": "high",
+        "type": "slo"
+      },
+      "created_at": "2025-10-21T15:23:30.209881"
+    },
+    {
+      "id": 95,
+      "action": "SLO_CHECK",
+      "model_id": 2,
+      "actor": null,
+      "details": {
+        "metric_id": 45,
+        "violations": 3
+      },
+      "created_at": "2025-10-21T15:23:30.169488"
+    },
+    {
+      "id": 94,
+      "action": "SLO_THRESHOLDS_SET",
+      "model_id": 2,
+      "actor": "alice",
+      "details": {
+        "thresholds": {
+          "f1": 0.75,
+          "auc": 0.8,
+          "latency_p95_ms": 200.0
+        },
+        "directions": {
+          "latency_p95_ms": "le"
+        }
+      },
+      "created_at": "2025-10-21T15:22:52.461610"
+    },
+    {
+      "id": 93,
+      "action": "ALERT_CREATED",
+      "model_id": 2,
+      "actor": null,
+      "details": {
+        "alert_id": 21,
+        "severity": "high",
+        "type": "slo"
+      },
+      "created_at": "2025-10-21T14:43:20.925773"
+    },
+    {
+      "id": 92,
+      "action": "SLO_CHECK",
+      "model_id": 2,
+      "actor": null,
+      "details": {
+        "metric_id": 44,
+        "violations": 2
+      },
+      "created_at": "2025-10-21T14:43:20.886046"
+    },
+    {
+      "id": 91,
+      "action": "SLO_THRESHOLDS_SET",
+      "model_id": 2,
+      "actor": "alice",
+      "details": {
+        "thresholds": {
+          "f1": 0.75,
+          "auc": 0.8,
+          "latency_p95_ms": 200.0
+        },
+        "directions": {
+          "latency_p95_ms": "le"
+        }
+      },
+      "created_at": "2025-10-21T14:42:45.122300"
+    }
+  ],
+  "metrics": {
+    "baselines": [
+      {
+        "id": 14,
+        "feature": "age_bucket",
+        "method": "psi_baseline",
+        "value": null,
+        "details": {
+          "expected": [
+            0.1,
+            0.2,
+            0.3,
+            0.25,
+            0.15
+          ]
+        },
+        "created_at": "2025-10-10T21:11:27.027676"
+      }
+    ],
+    "psi_evaluations": []
+  },
+  "alerts": [
+    {
+      "id": 26,
+      "type": "slo",
+      "severity": "medium",
+      "message": "SLO breach: auc 0.85 < 0.9; f1 0.75 < 0.8",
+      "details": {
+        "violations": [
+          {
+            "metric": "auc",
+            "value": 0.85,
+            "target": 0.9,
+            "direction": "ge",
+            "severity": "medium"
+          },
+          {
+            "metric": "f1",
+            "value": 0.75,
+            "target": 0.8,
+            "direction": "ge",
+            "severity": "medium"
+          }
+        ],
+        "metric_id": 49
+      },
+      "status": "open",
+      "created_at": "2025-10-21T23:39:29.287367",
+      "resolved_at": null
+    },
+    {
+      "id": 25,
+      "type": "slo",
+      "severity": "high",
+      "message": "SLO breach: auc 0.74 < 0.9; f1 0.71 < 0.8 (+1 more)",
+      "details": {
+        "violations": [
+          {
+            "metric": "auc",
+            "value": 0.74,
+            "target": 0.9,
+            "direction": "ge",
+            "severity": "high"
+          },
+          {
+            "metric": "f1",
+            "value": 0.71,
+            "target": 0.8,
+            "direction": "ge",
+            "severity": "medium"
+          },
+          {
+            "metric": "latency_p95_ms",
+            "value": 240.0,
+            "target": 180.0,
+            "direction": "le",
+            "severity": "high"
+          }
+        ],
+        "metric_id": 48
+      },
+      "status": "open",
+      "created_at": "2025-10-21T23:38:55.480880",
+      "resolved_at": null
+    },
+    {
+      "id": 24,
+      "type": "dq",
+      "severity": "high",
+      "message": "High missing rate on 'zipcode_admin' (22.0%)",
+      "details": {
+        "kind": "missing",
+        "missing_rate": 0.22,
+        "feature": "zipcode_admin",
+        "metric_id": 47
+      },
+      "status": "open",
+      "created_at": "2025-10-21T23:37:31.874443",
+      "resolved_at": null
+    },
+    {
+      "id": 22,
+      "type": "slo",
+      "severity": "high",
+      "message": "SLO breach: f1 0.71 < 0.75; auc 0.74 < 0.8 (+1 more)",
+      "details": {
+        "violations": [
+          {
+            "metric": "f1",
+            "value": 0.71,
+            "target": 0.75,
+            "direction": "ge",
+            "severity": "medium"
+          },
+          {
+            "metric": "auc",
+            "value": 0.74,
+            "target": 0.8,
+            "direction": "ge",
+            "severity": "medium"
+          },
+          {
+            "metric": "latency_p95_ms",
+            "value": 240.0,
+            "target": 200.0,
+            "direction": "le",
+            "severity": "high"
+          }
+        ],
+        "metric_id": 45
+      },
+      "status": "resolved",
+      "created_at": "2025-10-21T15:23:30.200327",
+      "resolved_at": "2025-10-21T23:18:05.994214"
+    },
+    {
+      "id": 21,
+      "type": "slo",
+      "severity": "high",
+      "message": "SLO breach: auc 0.74 < 0.8; latency_p95_ms 230 > 200",
+      "details": {
+        "violations": [
+          {
+            "metric": "auc",
+            "value": 0.74,
+            "target": 0.8,
+            "direction": "ge",
+            "severity": "medium"
+          },
+          {
+            "metric": "latency_p95_ms",
+            "value": 230.0,
+            "target": 200.0,
+            "direction": "le",
+            "severity": "high"
+          }
+        ],
+        "metric_id": 44
+      },
+      "status": "resolved",
+      "created_at": "2025-10-21T14:43:20.914130",
+      "resolved_at": "2025-10-21T23:18:05.994205"
+    }
+  ],
+  "summary": {
+    "open_alerts": 3,
+    "high_alerts": 4,
+    "evaluations_in_window": 0,
+    "approvals_in_window": 0,
+    "policy_hash": null
+  }
+}

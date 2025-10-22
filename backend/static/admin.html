@@ -111,6 +111,63 @@
     </div>
 
     <div class="card">
+      <h2>Policy</h2>
+
+      <div class="row" style="gap:8px; align-items:center">
+        <label class="muted">Target</label>
+        <select id="policy-target">
+          <option value="staging">staging</option>
+          <option value="production" selected>production</option>
+        </select>
+
+        <button onclick="policyCheck()">Check</button>
+        <button onclick="policyReload()">Reload</button>
+        <button onclick="policyShow()">Show file</button>
+      </div>
+
+      <div id="policy-status" class="hint" style="margin-top:6px"></div>
+
+      <div class="hr"></div>
+
+      <div class="muted" style="margin:2px 0 4px">Blocks</div>
+      <ul id="policy-blocks"></ul>
+
+      <div class="muted" style="margin:10px 0 4px">Snapshot / Policy file</div>
+      <pre id="policy-result" class="mono" style="max-height:240px; overflow:auto; background:#0b0b0b; padding:8px; border-radius:8px"></pre>
+    </div>
+
+    <div class="card">
+      <h2>Audit & Reports</h2>
+
+      <div class="row">
+        <label class="muted">Generate audit pack for:</label>
+        <button class="primary" onclick="auditPackGen(24)">Last 24h</button>
+        <button onclick="auditPackGen(7*24)">Last 7d</button>
+        <button onclick="auditPackGen(null)">All time</button>
+      </div>
+
+      <div class="row" style="margin-top:6px">
+        <button onclick="listAuditPacks()">List packs</button>
+        <span id="audit-pack-status" class="hint"></span>
+      </div>
+
+      <div class="hr"></div>
+
+      <table id="audit-pack-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th style="width:120px">Size</th>
+            <th style="width:200px">Modified (UTC)</th>
+            <th style="width:110px"></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+
+    <div class="card">
     <h2>SLO checks</h2>
     <div class="row">
       <div class="col" style="gap:6px; width:100%">
@@ -338,6 +395,89 @@ async function testSlack(){
 async function monitorRun(){
   const res = await fetch(Base + "/admin/monitor/run", { method:"POST", headers: authHeaders() });
   if(res.ok){ await loadAlerts(); } else { alert("Monitor run failed"); }
+}
+
+// --------- Policy helpers (NEW) ---------
+async function policyCheck(){
+  const target = byId("policy-target").value;
+  const res = await fetch(Base + `/api/models/${mid()}/policy/check?target=${encodeURIComponent(target)}`, {
+    headers: authHeaders()
+  });
+  const d = await res.json();
+  if(!res.ok){
+    setStatus("policy-status", d.detail || "policy check failed");
+    return;
+  }
+  // status headline
+  setStatus("policy-status", d.allow ? "ALLOW ✅" : "BLOCK ❌");
+
+  // render blocks
+  const ul = byId("policy-blocks");
+  ul.innerHTML = "";
+  (d.blocks || []).forEach(b => {
+    const li = document.createElement("li");
+    li.textContent = `${b.rule} — ${b.reason}${b.waived ? " (waived)" : ""}`;
+    ul.appendChild(li);
+  });
+
+  // snapshot (open alerts, slo, etc.)
+  byId("policy-result").textContent = JSON.stringify(d.snapshot || {}, null, 2);
+}
+
+async function policyReload(){
+  const res = await fetch(Base + `/api/policy/reload`, {
+    method: "POST",
+    headers: authHeaders()
+  });
+  const d = await res.json().catch(()=>({}));
+  setStatus("policy-status", res.ok ? "reloaded ✅" : (d.detail || "reload failed"));
+}
+
+async function policyShow(){
+  const res = await fetch(Base + `/api/policy`, { headers: authHeaders() });
+  const d = await res.json();
+  byId("policy-result").textContent = JSON.stringify(d, null, 2);
+  setStatus("policy-status", res.ok ? "loaded policy.yaml" : "load failed");
+}
+
+function iso(date){ return date.toISOString().slice(0,19); }
+
+async function auditPackGen(hours){
+  const id = mid();
+  let start=null, end=null;
+  if(hours != null){
+    const e = new Date();                  // now
+    const s = new Date(e.getTime() - hours*3600*1000);
+    start = iso(s); end = iso(e);
+  }
+  const qs = (start && end) ? `?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}` : "";
+  const res = await fetch(Base + `/api/models/${id}/audit-pack${qs}`, { headers: authHeaders() });
+  const d = await res.json();
+  if(!res.ok){
+    setStatus("audit-pack-status", d.detail || "generation failed");
+    return;
+  }
+  setStatus("audit-pack-status", `generated → ${d._saved_to || "saved"}`);
+  await listAuditPacks();
+}
+
+async function listAuditPacks(){
+  const res = await fetch(Base + `/api/audit-packs`, { headers: authHeaders() });
+  const rows = await res.json();
+  const tbody = document.querySelector("#audit-pack-table tbody");
+  tbody.innerHTML = "";
+  rows.forEach(r => {
+    const tr = document.createElement("tr");
+    const kb = Math.max(1, Math.round((r.size_bytes||0)/1024));
+    tr.innerHTML = `
+      <td class="mono">${r.name}</td>
+      <td>${kb} KB</td>
+      <td class="mono">${r.modified}</td>
+      <td><a href="${Base}/api/audit-packs/${encodeURIComponent(r.name)}" target="_blank">Download</a></td>
+    `;
+    tbody.appendChild(tr);
+  });
+  setStatus("audit-pack-status", `${rows.length} pack(s)`);
 }
 
 // ------------- quick tests -------------

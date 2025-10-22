@@ -18,3 +18,20 @@
 {"id": 108, "action": "DECIDE_PROMOTION", "model_id": 6, "actor": "carol", "details": {"approval_id": 5, "decision": "approved", "note": "", "approvals": 2, "needed": 2}, "created_at": "2025-10-21T20:47:18.926360"}
 {"id": 109, "action": "APPROVAL_QUORUM_MET", "model_id": 6, "actor": "carol", "details": {"approval_id": 5, "target": "production", "approvals": 2}, "created_at": "2025-10-21T20:47:18.939846"}
 {"id": 110, "action": "POLICY_BLOCK", "model_id": 6, "actor": "carol", "details": {"approval_id": 5, "blocks": [{"rule": "block_on_alerts", "reason": "1 open alert(s) in last 24h with severity in ['medium', 'high']", "waived": false}, {"rule": "require_baselines", "reason": "Missing PSI baselines for features: age_bucket", "waived": false}, {"rule": "block_high_alerts", "reason": "1 high-severity open alert(s)", "waived": false}], "target": "production"}, "created_at": "2025-10-21T20:47:18.967782"}
+{"id": 111, "action": "ALERT_ACKED", "model_id": 6, "actor": "alice", "details": {"alert_id": 23}, "created_at": "2025-10-21T23:16:34.258976"}
+{"id": 112, "action": "ALERT_COMMENTED", "model_id": 6, "actor": "alice", "details": {"alert_id": 23, "comment": "Alert Comment"}, "created_at": "2025-10-21T23:17:07.270532"}
+{"id": 113, "action": "ALERTS_RESOLVED_BULK", "model_id": 6, "actor": "alice", "details": {"count": 0}, "created_at": "2025-10-21T23:17:20.439889"}
+{"id": 114, "action": "ALERTS_RESOLVED_BULK", "model_id": 2, "actor": "alice", "details": {"count": 3}, "created_at": "2025-10-21T23:18:06.023199"}
+{"id": 115, "action": "DQ_MISSING_EVALUATED", "model_id": 2, "actor": null, "details": {"feature": "zipcode_admin", "missing_rate": 0.22, "severity": "high", "metric_id": 47}, "created_at": "2025-10-21T23:37:31.707735"}
+{"id": 116, "action": "ALERT_CREATED", "model_id": 2, "actor": null, "details": {"alert_id": 24, "severity": "high", "feature": "zipcode_admin", "type": "dq"}, "created_at": "2025-10-21T23:37:31.957163"}
+{"id": 117, "action": "SLO_THRESHOLDS_SET", "model_id": 2, "actor": "alice", "details": {"thresholds": {"auc": 0.9, "f1": 0.8, "latency_p95_ms": 180.0}, "directions": {"latency_p95_ms": "le"}}, "created_at": "2025-10-21T23:38:28.515789"}
+{"id": 118, "action": "SLO_CHECK", "model_id": 2, "actor": null, "details": {"metric_id": 48, "violations": 3}, "created_at": "2025-10-21T23:38:55.438453"}
+{"id": 119, "action": "ALERT_CREATED", "model_id": 2, "actor": null, "details": {"alert_id": 25, "severity": "high", "type": "slo"}, "created_at": "2025-10-21T23:38:55.496355"}
+{"id": 120, "action": "SLO_CHECK", "model_id": 2, "actor": null, "details": {"metric_id": 49, "violations": 2}, "created_at": "2025-10-21T23:39:29.244296"}
+{"id": 121, "action": "ALERT_CREATED", "model_id": 2, "actor": null, "details": {"alert_id": 26, "severity": "medium", "type": "slo"}, "created_at": "2025-10-21T23:39:29.298093"}
+{"id": 122, "action": "SLO_THRESHOLDS_SET", "model_id": 2, "actor": "alice", "details": {"thresholds": {"auc": 0.8, "f1": 0.75, "latency_p95_ms": 200.0}, "directions": {"latency_p95_ms": "le"}}, "created_at": "2025-10-21T23:40:06.128950"}
+{"id": 123, "action": "SLO_CHECK", "model_id": 2, "actor": null, "details": {"metric_id": 50, "violations": 3}, "created_at": "2025-10-21T23:40:06.193586"}
+{"id": 124, "action": "ALERT_SUPPRESSED", "model_id": 2, "actor": null, "details": {"reason": "duplicate_within_cooldown", "cooldown_min": 30, "type": "slo", "severity": "high"}, "created_at": "2025-10-21T23:40:06.209410"}
+{"id": 125, "action": "SLO_THRESHOLDS_SET", "model_id": 2, "actor": "alice", "details": {"thresholds": {"auc": 0.8, "f1": 0.75, "latency_p95_ms": 200.0}, "directions": {"latency_p95_ms": "le"}}, "created_at": "2025-10-21T23:40:15.032373"}
+{"id": 126, "action": "SLO_CHECK", "model_id": 2, "actor": null, "details": {"metric_id": 51, "violations": 3}, "created_at": "2025-10-21T23:40:15.149955"}
+{"id": 127, "action": "ALERT_SUPPRESSED", "model_id": 2, "actor": null, "details": {"reason": "duplicate_within_cooldown", "cooldown_min": 30, "type": "slo", "severity": "high"}, "created_at": "2025-10-21T23:40:15.203570"}
