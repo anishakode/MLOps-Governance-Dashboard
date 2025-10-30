@@ -1,0 +1,8 @@
+{"id": 138, "action": "DQ_MISSING_EVALUATED", "model_id": 1, "actor": null, "details": {"feature": "zipcode", "missing_rate": 0.22, "severity": "high", "metric_id": 55}, "created_at": "2025-10-30T19:16:03.787780"}
+{"id": 139, "action": "ALERT_CREATED", "model_id": 1, "actor": null, "details": {"alert_id": 29, "severity": "high", "feature": "zipcode", "type": "dq"}, "created_at": "2025-10-30T19:16:03.906342"}
+{"id": 140, "action": "SET_BASELINE", "model_id": 1, "actor": null, "details": {"feature": "age_bucket", "metric_id": 56}, "created_at": "2025-10-30T19:16:51.478214"}
+{"id": 141, "action": "DRIFT_EVALUATED", "model_id": 1, "actor": null, "details": {"feature": "age_bucket", "psi": 0.35201092946855816, "severity": "high", "metric_id": 57}, "created_at": "2025-10-30T19:16:59.878077"}
+{"id": 142, "action": "ALERT_CREATED", "model_id": 1, "actor": null, "details": {"alert_id": 30, "severity": "high", "feature": "age_bucket"}, "created_at": "2025-10-30T19:16:59.939127"}
+{"id": 143, "action": "WAIVER_GRANTED", "model_id": 1, "actor": "alice", "details": {"waiver_id": 3, "rule": "block_on_alerts", "target": "production", "expires_at": null}, "created_at": "2025-10-30T19:18:21.583924"}
+{"id": 144, "action": "ALERT_ACKED", "model_id": 1, "actor": "alice", "details": {"alert_id": 30}, "created_at": "2025-10-30T19:19:24.802534"}
+{"id": 145, "action": "ALERT_RESOLVED", "model_id": 1, "actor": null, "details": {"alert_id": 30}, "created_at": "2025-10-30T19:19:55.893097"}

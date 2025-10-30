@@ -76,6 +76,60 @@
     </div>
 
     <div class="card">
+    <h2>Approvals</h2>
+
+    <div class="row">
+      <label class="muted">Request promotion</label>
+    </div>
+    <div class="row">
+      <select id="appr-target" style="max-width:160px">
+        <option value="staging">staging</option>
+        <option value="production">production</option>
+      </select>
+      <input id="appr-just" placeholder="justification (why now?)" />
+    </div>
+    <div class="row">
+      <button class="primary" onclick="requestPromotion()">Request</button>
+      <span id="appr-status" class="hint"></span>
+    </div>
+
+    <div class="hr"></div>
+
+    <div class="row" style="gap:12px">
+      <label class="muted">Pending & recent</label>
+      <select id="appr-filter" style="max-width:160px">
+        <option value="">All</option>
+        <option value="pending">Pending</option>
+        <option value="approved">Approved</option>
+        <option value="rejected">Rejected</option>
+      </select>
+      <button onclick="loadApprovals()">Refresh</button>
+    </div>
+
+    <div class="row" style="margin-top:6px">
+      <input id="appr-note" placeholder="approval note (optional)" />
+      <button onclick="approveSelected()">Approve selected</button>
+      <button class="danger" onclick="rejectSelected()">Reject selected</button>
+    </div>
+
+    <table id="appr-table" style="margin-top:8px">
+      <thead>
+        <tr>
+          <th style="width:70px">ID</th>
+          <th>Target</th>
+          <th>Status</th>
+          <th>Requested by</th>
+          <th>Created</th>
+          <th>Decisions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div class="hint" id="appr-hint" style="margin-top:6px"></div>
+  </div>
+
+    <div class="card">
       <h2>Alert Ops</h2>
       <div class="row">
         <button onclick="ackSelected()">ACK selected</button>
@@ -135,6 +189,53 @@
       <div class="muted" style="margin:10px 0 4px">Snapshot / Policy file</div>
       <pre id="policy-result" class="mono" style="max-height:240px; overflow:auto; background:#0b0b0b; padding:8px; border-radius:8px"></pre>
     </div>
+    
+    <div class="card">
+      <h2>Baselines &amp; DQ</h2>
+
+      <div class="row">
+        <strong class="muted">PSI baseline</strong>
+      </div>
+      <div class="row">
+        <input id="psi-feature" placeholder="feature (e.g., age_bucket)" />
+      </div>
+      <div class="row">
+        <input id="psi-expected" class="mono" placeholder="expected bins (e.g., 0.10,0.20,0.30,0.25,0.15)" />
+      </div>
+      <div class="row">
+        <button class="primary" onclick="psiSetBaseline()">Set baseline</button>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="row">
+        <strong class="muted">PSI evaluate</strong>
+      </div>
+      <div class="row">
+        <input id="psi-actual" class="mono" placeholder="actual bins (e.g., 0.05,0.10,0.18,0.32,0.35)" />
+      </div>
+      <div class="row">
+        <button onclick="psiEval()">Evaluate PSI</button>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="row">
+        <strong class="muted">DQ: missing</strong>
+      </div>
+      <div class="row">
+        <input id="dq-feature" placeholder="feature (e.g., zipcode)" />
+      </div>
+      <div class="row">
+        <input id="dq-total" placeholder="total_count (e.g., 1000)" />
+        <input id="dq-missing" placeholder="missing_count (e.g., 220)" />
+      </div>
+      <div class="row">
+        <button onclick="dqMissingManual()">Run DQ missing</button>
+      </div>
+
+      <div class="hint" id="bdq-hint" style="margin-top:6px"></div>
+    </div>
 
     <div class="card">
       <h2>Audit & Reports</h2>
@@ -165,7 +266,6 @@
         <tbody></tbody>
       </table>
     </div>
-
 
     <div class="card">
     <h2>SLO checks</h2>
@@ -271,9 +371,113 @@ async function login() {
   if (!res.ok) { setStatus("login-status","login failed"); return; }
   const data = await res.json();
   token = data.access_token; localStorage.setItem("mlops_token", token);
+  window.currentUser = username;
   setStatus("login-status","signed in as "+username+" ("+role+")");
   byId("token-preview").textContent = (token || "").slice(0,28) + (token ? "…" : "");
   loadModels();
+}
+
+let selectedApprovalId = null;
+
+function fmtTS(s){ if(!s) return ""; try{return new Date(s).toLocaleString()}catch(e){return s} }
+function setApprStatus(s){ const el = document.getElementById("appr-status"); if(el) el.textContent = s || ""; }
+function setApprHint(s){ const el = document.getElementById("appr-hint"); if(el) el.textContent = s || ""; }
+
+async function requestPromotion(){
+  const target = byId("appr-target").value;
+  const justification = byId("appr-just").value.trim();
+  const requested_by = window.currentUser || "admin"; // set in login()
+
+  const res = await fetch(Base + `/api/models/${mid()}/promotions`, {
+    method:"POST",
+    headers: authHeaders(),
+    body: JSON.stringify({ target, justification, requested_by })
+  });
+  const d = await res.json().catch(()=>({}));
+
+  if(!res.ok){
+    setApprStatus(d.detail || "request failed");
+    return;
+  }
+  setApprStatus(`requested (#${d.approval_id}) → ${d.status}`);
+  byId("appr-just").value = "";
+  await loadApprovals();
+}
+
+async function loadApprovals(){
+  // Backend supports ?status=..., no model_id filter; filter client-side by selected model
+  const status = byId("appr-filter").value;
+  const q = status ? `?status=${encodeURIComponent(status)}` : "";
+  const res = await fetch(Base + `/api/approvals${q}`, { headers: authHeaders() });
+  const rows = await res.json();
+  const tbody = byId("appr-table").querySelector("tbody");
+  tbody.innerHTML = "";
+  selectedApprovalId = null;
+
+  const modelId = parseInt(mid(),10);
+  const filtered = rows.filter(r => r.model_id === modelId);
+
+  filtered.forEach(a => {
+    const tr = document.createElement("tr");
+    const decisions = Array.isArray(a.decisions) ? a.decisions.map(x => `${x.decision} by ${x.by}`).join("; ") : "";
+    tr.innerHTML = `
+      <td class="mono">${a.id}</td>
+      <td>${a.target}</td>
+      <td class="mono">${a.status}</td>
+      <td class="mono">${a.requested_by || ""}</td>
+      <td class="mono">${fmtTS(a.created_at)}</td>
+      <td class="mono">${decisions}</td>
+    `;
+    tr.onclick = () => {
+      [...tbody.children].forEach(r => r.style.background = "");
+      tr.style.background = "#0e1a2f";
+      selectedApprovalId = a.id;
+      setApprHint(`selected approval #${a.id}`);
+    };
+    tbody.appendChild(tr);
+  });
+  setApprHint(filtered.length ? `${filtered.length} approval(s)` : "No approvals");
+}
+
+async function approveSelected(){
+  if(!selectedApprovalId){ alert("Select a row first"); return; }
+  const decided_by = window.currentUser || "approver";
+  const note = byId("appr-note").value.trim();
+
+  const res = await fetch(Base + `/api/approvals/${selectedApprovalId}/decision`, {
+    method:"POST",
+    headers: authHeaders(),
+    body: JSON.stringify({ decided_by, decision:"approved", note })
+  });
+  const d = await res.json().catch(()=>({}));
+
+  if(!res.ok){
+    // Common SoD/quorum/policy messages surface here
+    alert(d.detail || "approve failed (need approver/admin role?)");
+    return;
+  }
+  byId("appr-note").value = "";
+  await loadApprovals();
+  // tip: if policy blocked, server kept status 'rejected' and logged a POLICY_BLOCKED audit
+}
+
+async function rejectSelected(){
+  if(!selectedApprovalId){ alert("Select a row first"); return; }
+  const decided_by = window.currentUser || "approver";
+  const note = byId("appr-note").value.trim();
+
+  const res = await fetch(Base + `/api/approvals/${selectedApprovalId}/decision`, {
+    method:"POST",
+    headers: authHeaders(),
+    body: JSON.stringify({ decided_by, decision:"rejected", note })
+  });
+  const d = await res.json().catch(()=>({}));
+  if(!res.ok){
+    alert(d.detail || "reject failed (need approver/admin role?)");
+    return;
+  }
+  byId("appr-note").value = "";
+  await loadApprovals();
 }
 
 // ------------- models -------------
@@ -287,7 +491,7 @@ async function loadModels() {
     opt.value = m.id; opt.textContent = `#${m.id} — ${m.name} [${m.stage}]`;
     sel.appendChild(opt);
   });
-  if (data.length) { sel.value = data[0].id; await loadAlerts(); }
+  if (data.length) { sel.value = data[0].id; await loadAlerts(); await loadApprovals();}
 }
 
 async function createModel(){
@@ -408,19 +612,28 @@ async function policyCheck(){
     setStatus("policy-status", d.detail || "policy check failed");
     return;
   }
-  // status headline
+
+  // headline
   setStatus("policy-status", d.allow ? "ALLOW ✅" : "BLOCK ❌");
 
-  // render blocks
+  // render blocks with a 'Create waiver' button if not waived
   const ul = byId("policy-blocks");
   ul.innerHTML = "";
   (d.blocks || []).forEach(b => {
     const li = document.createElement("li");
-    li.textContent = `${b.rule} — ${b.reason}${b.waived ? " (waived)" : ""}`;
+    const label = `${b.rule} — ${b.reason}${b.waived ? " (waived)" : ""}`;
+    li.textContent = label;
+    if(!b.waived && d.allow === false){
+      const btn = document.createElement("button");
+      btn.textContent = "Create waiver";
+      btn.style.marginLeft = "8px";
+      btn.onclick = () => createWaiver(b.rule, target);
+      li.appendChild(btn);
+    }
     ul.appendChild(li);
   });
 
-  // snapshot (open alerts, slo, etc.)
+  // snapshot
   byId("policy-result").textContent = JSON.stringify(d.snapshot || {}, null, 2);
 }
 
@@ -438,6 +651,103 @@ async function policyShow(){
   const d = await res.json();
   byId("policy-result").textContent = JSON.stringify(d, null, 2);
   setStatus("policy-status", res.ok ? "loaded policy.yaml" : "load failed");
+}
+
+async function createWaiver(rule, target){
+  const reason = prompt(`Reason for waiving '${rule}' on target '${target}'?`, "temporary exception for demo");
+  if(!reason) return;
+
+  // optional expiry (days)
+  const daysStr = prompt("Expires in N days (optional). Leave blank for no expiry:", "");
+  let expires_at = null;
+  if(daysStr && !isNaN(parseInt(daysStr,10))){
+    const days = parseInt(daysStr,10);
+    const dt = new Date(Date.now() + days*24*3600*1000);
+    // Use ISO format the API expects
+    expires_at = dt.toISOString();
+  }
+
+  const body = {
+    model_id: parseInt(mid()),
+    rule,
+    target,
+    reason,
+    requested_by: window.currentUser || "admin",
+    approved_by: window.currentUser || "admin",
+    ...(expires_at ? { expires_at } : {})
+  };
+
+  const res = await fetch(Base + `/api/waivers`, {
+    method:"POST", headers: authHeaders(), body: JSON.stringify(body)
+  });
+  const d = await res.json().catch(()=>({}));
+  if(res.ok){
+    alert(`Waiver created (#${d.id}) for rule '${d.rule}'`);
+    await policyCheck(); // re-run to show ALLOW if unblocked
+  }else{
+    alert("Waiver failed: " + (d.detail || res.statusText));
+  }
+}
+
+function parseBins(s){
+  // accepts "0.1,0.2,0.3" or "0.1 0.2 0.3"
+  return (s || "")
+    .replace(/,/g, " ")
+    .split(/\s+/)
+    .map(x => parseFloat(x))
+    .filter(v => Number.isFinite(v));
+}
+
+async function psiSetBaseline(){
+  const feature = byId("psi-feature").value.trim();
+  const expected = parseBins(byId("psi-expected").value);
+  if(!feature || !expected.length){ setStatus("bdq-hint","enter feature & expected bins"); return; }
+  const res = await fetch(Base + `/api/models/${mid()}/drift/baseline`, {
+    method:"POST", headers: authHeaders(),
+    body: JSON.stringify({ feature, expected })
+  });
+  const d = await res.json().catch(()=>({}));
+  if(res.ok){ setStatus("bdq-hint", `baseline set (metric_id=${d.metric_id})`); }
+  else { setStatus("bdq-hint", d.detail || "baseline failed"); }
+}
+
+async function psiEval(){
+  const feature = byId("psi-feature").value.trim();
+  const actual = parseBins(byId("psi-actual").value);
+  if(!feature || !actual.length){ setStatus("bdq-hint","enter feature & actual bins"); return; }
+  const res = await fetch(Base + `/api/models/${mid()}/drift/psi`, {
+    method:"POST", headers: authHeaders(),
+    body: JSON.stringify({ feature, actual })
+  });
+  const d = await res.json().catch(()=>({}));
+  if(res.ok){
+    const extra = d.alert_id ? ` • alert_id=${d.alert_id}` : "";
+    setStatus("bdq-hint", `PSI=${d.psi} severity=${d.severity}${extra} (metric_id=${d.metric_id})`);
+    await loadAlerts();
+  } else {
+    setStatus("bdq-hint", d.detail || "PSI eval failed");
+  }
+}
+
+async function dqMissingManual(){
+  const feature = byId("dq-feature").value.trim();
+  const total = parseInt(byId("dq-total").value, 10);
+  const missing = parseInt(byId("dq-missing").value, 10);
+  if(!feature || !Number.isFinite(total) || !Number.isFinite(missing)){
+    setStatus("bdq-hint","enter feature, total_count, missing_count"); return;
+  }
+  const res = await fetch(Base + `/api/models/${mid()}/drift/dq/missing`, {
+    method:"POST", headers: authHeaders(),
+    body: JSON.stringify({ feature, total_count: total, missing_count: missing })
+  });
+  const d = await res.json().catch(()=>({}));
+  if(res.ok){
+    const extra = d.alert_id ? ` • alert_id=${d.alert_id}` : "";
+    setStatus("bdq-hint", `missing_rate=${d.missing_rate} severity=${d.severity}${extra} (metric_id=${d.metric_id})`);
+    await loadAlerts();
+  } else {
+    setStatus("bdq-hint", d.detail || "DQ missing failed");
+  }
 }
 
 function iso(date){ return date.toISOString().slice(0,19); }

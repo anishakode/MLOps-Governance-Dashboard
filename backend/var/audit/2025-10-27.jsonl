@@ -1,0 +1,10 @@
+{"id": 128, "action": "DQ_MISSING_EVALUATED", "model_id": 3, "actor": null, "details": {"feature": "zipcode_admin", "missing_rate": 0.22, "severity": "high", "metric_id": 52}, "created_at": "2025-10-27T00:23:54.703501"}
+{"id": 129, "action": "ALERT_CREATED", "model_id": 3, "actor": null, "details": {"alert_id": 27, "severity": "high", "feature": "zipcode_admin", "type": "dq"}, "created_at": "2025-10-27T00:23:54.791266"}
+{"id": 130, "action": "DQ_MISSING_EVALUATED", "model_id": 3, "actor": null, "details": {"feature": "zipcode_admin", "missing_rate": 0.22, "severity": "high", "metric_id": 53}, "created_at": "2025-10-27T00:23:58.298892"}
+{"id": 131, "action": "ALERT_SUPPRESSED", "model_id": 3, "actor": null, "details": {"reason": "duplicate_within_cooldown", "cooldown_min": 30, "feature": "zipcode_admin", "severity": "high", "type": "dq", "kind": "missing"}, "created_at": "2025-10-27T00:23:58.310805"}
+{"id": 132, "action": "ALERT_ACKED", "model_id": 3, "actor": "alice", "details": {"alert_id": 27}, "created_at": "2025-10-27T00:24:41.582270"}
+{"id": 133, "action": "ALERT_RESOLVED", "model_id": 3, "actor": null, "details": {"alert_id": 27}, "created_at": "2025-10-27T00:25:07.750500"}
+{"id": 134, "action": "SLO_THRESHOLDS_SET", "model_id": 3, "actor": "alice", "details": {"thresholds": {"auc": 0.75, "f1": 0.7, "latency_p95_ms": 180.0}, "directions": {"latency_p95_ms": "le"}}, "created_at": "2025-10-27T00:31:38.658101"}
+{"id": 135, "action": "SLO_THRESHOLDS_SET", "model_id": 3, "actor": "alice", "details": {"thresholds": {"auc": 0.8, "f1": 0.75, "latency_p95_ms": 200.0}, "directions": {"latency_p95_ms": "le"}}, "created_at": "2025-10-27T00:31:44.879762"}
+{"id": 136, "action": "SLO_CHECK", "model_id": 3, "actor": null, "details": {"metric_id": 54, "violations": 3}, "created_at": "2025-10-27T00:31:44.995418"}
+{"id": 137, "action": "ALERT_CREATED", "model_id": 3, "actor": null, "details": {"alert_id": 28, "severity": "high", "type": "slo"}, "created_at": "2025-10-27T00:31:45.056306"}
