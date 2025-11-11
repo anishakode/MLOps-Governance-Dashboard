@@ -1,0 +1,18 @@
+{"id": 180, "action": "SLO_THRESHOLDS_SET", "model_id": 1, "actor": "alice", "details": {"thresholds": {"auc": 0.7, "f1": 0.7, "latency_p95_ms": 250.0}, "directions": {"latency_p95_ms": "le"}}, "created_at": "2025-11-09T21:46:43.210837"}
+{"id": 181, "action": "SLO_CHECK", "model_id": 1, "actor": null, "details": {"metric_id": 77, "violations": 0}, "created_at": "2025-11-09T21:46:46.391118"}
+{"id": 182, "action": "SLO_CHECK", "model_id": 1, "actor": null, "details": {"metric_id": 78, "violations": 0}, "created_at": "2025-11-09T21:46:54.566531"}
+{"id": 183, "action": "SLO_CHECK", "model_id": 1, "actor": null, "details": {"metric_id": 79, "violations": 0}, "created_at": "2025-11-09T21:46:55.479592"}
+{"id": 184, "action": "SLO_THRESHOLDS_SET", "model_id": 1, "actor": "alice", "details": {"thresholds": {"auc": 0.8, "f1": 0.75, "latency_p95_ms": 200.0}, "directions": {"latency_p95_ms": "le"}}, "created_at": "2025-11-09T21:46:58.363980"}
+{"id": 185, "action": "SLO_CHECK", "model_id": 1, "actor": null, "details": {"metric_id": 80, "violations": 3}, "created_at": "2025-11-09T21:46:58.419036"}
+{"id": 186, "action": "ALERT_CREATED", "model_id": 1, "actor": null, "details": {"alert_id": 40, "severity": "high", "type": "slo"}, "created_at": "2025-11-09T21:46:58.477593"}
+{"id": 187, "action": "DQ_MISSING_EVALUATED", "model_id": 5, "actor": null, "details": {"feature": "zipcode_admin", "missing_rate": 0.22, "severity": "high", "metric_id": 81}, "created_at": "2025-11-09T22:39:38.506604"}
+{"id": 188, "action": "ALERT_CREATED", "model_id": 5, "actor": null, "details": {"alert_id": 41, "severity": "high", "feature": "zipcode_admin", "type": "dq"}, "created_at": "2025-11-09T22:39:38.533233"}
+{"id": 189, "action": "SLO_THRESHOLDS_SET", "model_id": 5, "actor": "alice", "details": {"thresholds": {"auc": 0.7, "f1": 0.7, "latency_p95_ms": 300.0}, "directions": {"latency_p95_ms": "le"}}, "created_at": "2025-11-09T22:41:04.812069"}
+{"id": 190, "action": "SLO_CHECK", "model_id": 5, "actor": null, "details": {"metric_id": 82, "violations": 0}, "created_at": "2025-11-09T22:41:05.862103"}
+{"id": 191, "action": "SLO_THRESHOLDS_SET", "model_id": 5, "actor": "alice", "details": {"thresholds": {"auc": 0.8, "f1": 0.75, "latency_p95_ms": 200.0}, "directions": {"latency_p95_ms": "le"}}, "created_at": "2025-11-09T22:41:08.018208"}
+{"id": 192, "action": "SLO_CHECK", "model_id": 5, "actor": null, "details": {"metric_id": 83, "violations": 3}, "created_at": "2025-11-09T22:41:08.114835"}
+{"id": 193, "action": "ALERT_CREATED", "model_id": 5, "actor": null, "details": {"alert_id": 42, "severity": "high", "type": "slo"}, "created_at": "2025-11-09T22:41:08.147198"}
+{"id": 194, "action": "SET_BASELINE", "model_id": 5, "actor": null, "details": {"feature": "age_bucket_admin", "metric_id": 84}, "created_at": "2025-11-09T22:43:08.182561"}
+{"id": 195, "action": "DRIFT_EVALUATED", "model_id": 5, "actor": null, "details": {"feature": "age_bucket_admin", "psi": 0.35201092946855816, "severity": "high", "metric_id": 85}, "created_at": "2025-11-09T22:43:08.251929"}
+{"id": 196, "action": "ALERT_CREATED", "model_id": 5, "actor": null, "details": {"alert_id": 43, "severity": "high", "feature": "age_bucket_admin"}, "created_at": "2025-11-09T22:43:08.302619"}
+{"id": 197, "action": "ALERT_ACKED", "model_id": 5, "actor": "alice", "details": {"alert_id": 43}, "created_at": "2025-11-09T22:44:15.593514"}

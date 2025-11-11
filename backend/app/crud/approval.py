@@ -7,6 +7,12 @@ from app.models.approval import ApprovalRequest
 from app.models.model import Model
 from app.services.audit import record_audit
 from app.utils.policy import explain_policy 
+from app.metrics import policy_blocks_total
+
+try:
+    from main import POLICY_BLOCKS
+except Exception:
+    POLICY_BLOCKS = None
 
 VALID_TARGETS = {"staging", "production"}
 VALID_DECISIONS = {"approved", "rejected"}
@@ -29,7 +35,6 @@ def request_promotion(db: Session, model_id: int, target: str, justification: st
     if not m:
         raise ValueError(f"Model {model_id} not found")
 
-    # Optional: avoid no-op requests (already in desired stage)
     try:
         if getattr(m, "stage", None) == target:
             raise ValueError(f"Model already in '{target}'")
@@ -147,6 +152,11 @@ def add_decision(db: Session, approval_id: int, decided_by: str, decision: str, 
         req.status = "blocked"
         db.commit()
         db.refresh(req)
+        try:
+            if POLICY_BLOCKS:
+                POLICY_BLOCKS.inc()
+        except Exception:
+            pass
         record_audit(
             db,
             "POLICY_BLOCK",
@@ -154,6 +164,7 @@ def add_decision(db: Session, approval_id: int, decided_by: str, decision: str, 
             decided_by,
             {"approval_id": approval_id, "blocks": pol.get("blocks", []), "target": req.target},
         )
+        policy_blocks_total.inc()
         return req
 
     # Passed policy → flip stage

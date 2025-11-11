@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Depends, Body, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response, FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
-from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 from sqlalchemy.orm import Session
 from sqlalchemy import text, inspect, func
 from pydantic import BaseModel, Field
@@ -11,7 +11,7 @@ from datetime import datetime, timezone, timedelta
 from mlflow.tracking import MlflowClient
 from collections import defaultdict
 from pathlib import Path
-import mlflow, uvicorn, asyncio, os, requests, json
+import mlflow, uvicorn, asyncio, os, requests, json, contextlib, httpx, time
 
 # Import our modules
 from app.core.database import get_db, engine, Base, SessionLocal
@@ -31,15 +31,17 @@ from app.models.waiver import Waiver
 from app.services.audit import record_audit
 from app.core.security import create_access_token, create_refresh_token, decode_token, ACCESS_TTL_MIN
 from app.deps.auth import require_role, get_current_user
-
-PSI_EVALS = Counter("psi_evaluations_total", "Number of PSI evaluations")
-ALERTS_CREATED = Counter("alerts_created_total", "Alerts created", ["severity"])
-POLICY_BLOCKS = Counter("policy_blocks_total", "Policy blocks")
-REQ_LAT = Histogram("request_latency_seconds", "Request latency")
+from app.metrics import request_latency_seconds as REQ_LAT
+from app.metrics import init_metrics_zero, refresh_open_alerts_gauge
 
 MONITOR_ENABLED = os.getenv("MONITOR_ENABLED", "1") == "1"
 MONITOR_INTERVAL_SEC = int(os.getenv("MONITOR_INTERVAL_SEC", "60"))
 MONITOR_ONLY_STAGE = os.getenv("MONITOR_ONLY_STAGE", "production")
+
+MONITOR_PERIOD_SEC = int(os.getenv("MONITOR_PERIOD_SEC", "300"))
+MLFLOW_SYNC_PERIOD_SEC = int(os.getenv("MLFLOW_SYNC_PERIOD_SEC", "300"))
+
+SYSTEM_JWT = create_access_token("system", "admin")
 
 _scheduler_task = None  # asyncio.Task
 
@@ -65,6 +67,59 @@ STATIC_DIR.mkdir(parents=True, exist_ok=True)
 
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
+# --- Prometheus: request latency middleware ---
+@app.middleware("http")
+async def record_latency(request: Request, call_next):
+    start = time.perf_counter()
+    try:
+        response = await call_next(request)
+        return response
+    finally:
+        REQ_LAT.observe(time.perf_counter() - start)
+
+async def _mlflow_sync_tick():
+    """Pull latest MLflow run metrics into model_metadata if tracking_uri+run_id exist."""
+    db: Session = SessionLocal()
+    try:
+        models = db.query(ModelDB).filter(ModelDB.stage == "production").all()
+        for m in models:
+            meta = (m.model_metadata or {}).get("mlflow") or {}
+            uri = meta.get("tracking_uri"); run_id = meta.get("run_id")
+            if not (uri and run_id):
+                continue
+            try:
+                from mlflow.tracking import MlflowClient
+                client = MlflowClient(tracking_uri=uri)
+                run = client.get_run(run_id)
+                mm = dict(m.model_metadata or {})
+                blob = dict(mm.get("mlflow") or {})
+                blob["metrics"] = {**(blob.get("metrics") or {}), **run.data.metrics}
+                mm["mlflow"] = blob
+                m.model_metadata = mm
+                db.commit()
+            except Exception as e:
+                print(f"[mlflow-sync] model {m.id} failed: {e}")
+    finally:
+        db.close()
+
+async def _monitor_tick():
+    """Call your existing monitor pass endpoint (admin.html uses the same)."""
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as c:
+            r = await c.post(
+                "http://localhost:8000/admin/monitor/run",
+                headers={"Authorization": f"Bearer {SYSTEM_JWT}"}
+            )
+            print("[monitor] tick:", r.status_code)
+    except Exception as e:
+        print("[monitor] tick failed:", e)
+
+async def _interval(fn, period):
+    while True:
+        with contextlib.suppress(Exception):
+            await fn()
+        await asyncio.sleep(period)
+
 @app.on_event("startup")
 def on_startup():
     print("Creating tables on startup...")
@@ -77,6 +132,16 @@ def on_startup():
     print("Tables now:", insp.get_table_names())
     print("Audit packs dir:", PACK_DIR)
 
+    # initialize zero-value time series so Grafana never shows "No data"
+    init_metrics_zero()
+
+    # seed the open_alerts_by_severity gauge from DB state
+    try:
+        db = SessionLocal()
+        refresh_open_alerts_gauge(db)
+    finally:
+        db.close()
+
     global _scheduler_task
     if MONITOR_ENABLED:
         print(f"[monitor] enabled; interval={MONITOR_INTERVAL_SEC}s stage_filter='{MONITOR_ONLY_STAGE}'")
@@ -84,6 +149,12 @@ def on_startup():
         _scheduler_task = loop.create_task(_monitor_loop())
     else:
         print("[monitor] disabled by MONITOR_ENABLED=0")
+
+@app.on_event("startup")
+async def start_background_loops():
+    asyncio.create_task(_interval(_mlflow_sync_tick, MLFLOW_SYNC_PERIOD_SEC))
+    await asyncio.sleep(5)
+    asyncio.create_task(_interval(_monitor_tick, MONITOR_PERIOD_SEC))
 
 @app.on_event("shutdown")
 def on_shutdown():
@@ -851,12 +922,14 @@ class LoginIn(BaseModel):
 
 @app.post("/auth/login")
 def auth_login(body: LoginIn):
+    import os
+    if os.getenv("DEMO_LOGIN_ENABLED", "true").lower() not in ("true","1","yes"):
+        # In “prod mode” disable the demo login endpoint
+        raise HTTPException(status_code=403, detail="Demo login disabled")
     role = body.role.lower()
     if role not in ("viewer","approver","admin"):
         raise HTTPException(400, "role must be viewer|approver|admin")
-    access = create_access_token(body.username, role)
-    refresh = create_refresh_token(body.username, role)
-    return {"access_token": access, "refresh_token": refresh, "token_type": "bearer", "expires_in": ACCESS_TTL_MIN * 60, "role": role, "username": body.username}
+    return {"access_token": create_access_token(body.username, role), "token_type": "bearer"}
 
 class RefreshIn(BaseModel):
     refresh_token: str

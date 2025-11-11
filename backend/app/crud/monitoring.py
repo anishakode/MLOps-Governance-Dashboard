@@ -1,7 +1,6 @@
 from datetime import datetime, timezone, timedelta
 from typing import List, Optional, Tuple, Dict, Any
 import os, json, requests
-from prometheus_client import Counter, Gauge
 from sqlalchemy.orm import Session
 
 from app.models.monitoring import MonitoringMetric, Alert
@@ -10,17 +9,19 @@ from app.utils.drift import population_stability_index, classify_psi
 from app.utils.runtime_config import get_slack_webhook
 from app.services.audit import record_audit
 from app.utils.stats import ks_d_stat, ks_severity
+from app.metrics import (
+    psi_evals_total,
+    alerts_created_total,
+    dq_checks_total,
+    dq_alerts_total,
+    slo_checks_total,
+    slo_alerts_total,
+    refresh_open_alerts_gauge,
+)
 
 APP_BASE_URL = os.getenv("APP_BASE_URL", "http://localhost:8000").rstrip("/")
 COOLDOWN_MIN = int(os.getenv("ALERT_COOLDOWN_MIN", "30"))
-DQ_CHECKS = Counter("dq_checks_total", "Number of data-quality checks", ["kind", "severity"])
-DQ_ALERTS = Counter("dq_alerts_total", "Number of data-quality alerts", ["kind", "severity"])
 SLACK_MENTION = os.getenv("SLACK_MENTION", "").strip().lower()
-OPEN_ALERTS_BY_SEV = Gauge(
-    "open_alerts_by_severity",
-    "Number of open alerts by severity",
-    ["severity"]
-)
 
 def _audit(db: Session, action: str, model_id: int, actor: Optional[str], details: dict):
     """Write an immutable audit record."""
@@ -44,16 +45,6 @@ def _slack_send(payload: dict) -> None:
             print(f"[SLACK] error: {r.text[:300]}")
     except Exception as e:
         print(f"[SLACK] send error: {e}")
-
-def _refresh_open_alert_gauges(db: Session, model_id: Optional[int] = None):
-    q = db.query(Alert).filter(Alert.status == "open")
-    if model_id is not None:
-        q = q.filter(Alert.model_id == model_id)
-    counts = {"low": 0, "medium": 0, "high": 0}
-    for a in q.all():
-        counts[a.severity] = counts.get(a.severity, 0) + 1
-    for sev, val in counts.items():
-        OPEN_ALERTS_BY_SEV.labels(severity=sev).set(val)
 
 
 def set_psi_baseline(db: Session, model_id: int, feature: str, expected_bins: List[float],
@@ -111,6 +102,8 @@ def eval_psi(db: Session, model_id: int, feature: str, actual_bins: List[float])
         # fallback to library defaults
         severity, msg = classify_psi(psi)
 
+    psi_evals_total.inc()
+
     mm = MonitoringMetric(
         model_id=model_id,
         feature=feature,
@@ -156,7 +149,8 @@ def eval_psi(db: Session, model_id: int, feature: str, actual_bins: List[float])
             db.add(alert_obj)
             db.commit()
             db.refresh(alert_obj)
-            _refresh_open_alert_gauges(db, model_id)
+            alerts_created_total.labels(type="drift", severity=severity).inc()
+            refresh_open_alerts_gauge(db, model_id)
 
             # Audit alert creation
             record_audit(
@@ -236,7 +230,7 @@ def resolve_alert(db: Session, alert_id: int, actor: Optional[str] = None):
     alert.status = "resolved"
     alert.resolved_at = datetime.utcnow()
     db.commit(); db.refresh(alert)
-    _refresh_open_alert_gauges(db, alert.model_id)
+    refresh_open_alerts_gauge(db, alert.model_id)
     record_audit(db, "ALERT_RESOLVED", alert.model_id, actor, {"alert_id": alert.id})
     return alert
 
@@ -323,10 +317,9 @@ def eval_dq_missing(
         },
     )
     db.add(mm); db.commit(); db.refresh(mm)
-    DQ_CHECKS.labels(kind="missing", severity=severity).inc()
+    dq_checks_total.labels(kind="missing", severity=severity).inc()
     record_audit(db, "DQ_MISSING_EVALUATED", model_id, None,
                  {"feature": feature, "missing_rate": rate, "severity": severity, "metric_id": mm.id})
-    DQ_CHECKS.labels(kind="missing", severity=severity).inc()
 
     alert_obj = None
     if severity in ("medium", "high"):
@@ -354,10 +347,12 @@ def eval_dq_missing(
                 details={"kind": "missing", "missing_rate": rate, "feature": feature, "metric_id": mm.id},
             )
             db.add(alert_obj); db.commit(); db.refresh(alert_obj)
-            _refresh_open_alert_gauges(db, model_id)
+            refresh_open_alerts_gauge(db, model_id)
             record_audit(db, "ALERT_CREATED", model_id, None,
                          {"alert_id": alert_obj.id, "severity": severity, "feature": feature, "type": "dq"})
-            DQ_ALERTS.labels(kind="missing", severity=severity).inc()
+            dq_alerts_total.labels(kind="missing", severity=severity).inc()
+            alerts_created_total.labels(type="dq", severity=severity).inc()
+
             
             # Slack notify
             try:
@@ -445,10 +440,9 @@ def eval_dq_range(
     mm = MonitoringMetric(model_id=model_id, feature=feature, method="dq_range",
                           value=f"{frac:.6f}", details=details)
     db.add(mm); db.commit(); db.refresh(mm)
-    _refresh_open_alert_gauges(db, model_id)
     record_audit(db, "DQ_RANGE_EVALUATED", model_id, None,
                  {"feature": feature, "out_of_range_frac": frac, "severity": severity, "metric_id": mm.id})
-    DQ_CHECKS.labels(kind="range", severity=severity).inc()
+    dq_checks_total.labels(kind="range", severity=severity).inc()
 
     alert_obj = None
     if severity in ("medium", "high"):
@@ -478,7 +472,10 @@ def eval_dq_range(
             db.add(alert_obj); db.commit(); db.refresh(alert_obj)
             record_audit(db, "ALERT_CREATED", model_id, None,
                          {"alert_id": alert_obj.id, "severity": severity, "feature": feature, "type": "dq"})
-            DQ_ALERTS.labels(kind="range", severity=severity).inc()
+            dq_alerts_total.labels(kind="range", severity=severity).inc()
+            alerts_created_total.labels(type="dq", severity=severity).inc()
+            refresh_open_alerts_gauge(db, model_id)
+
             
             try:
                 sev_emoji = {"high": "🚨", "medium": "⚠️"}.get(severity, "ℹ️")
@@ -558,6 +555,7 @@ def eval_slo(db: Session, model_id: int,
     Compare current metrics with SLO thresholds. Creates MonitoringMetric(method='slo_check').
     If any breach medium/high, raises Alert(type='slo') with cooldown and Slack.
     """
+    slo_checks_total.inc()
     violations = []
     worst_sev = "low"
 
@@ -587,6 +585,7 @@ def eval_slo(db: Session, model_id: int,
         details={"thresholds": thresholds, "metrics": metrics, "violations": violations},
     )
     db.add(mm); db.commit(); db.refresh(mm)
+    slo_checks_total.inc()
     record_audit(db, "SLO_CHECK", model_id, None, {"metric_id": mm.id, "violations": len(violations)})
 
     alert_obj: Optional[Alert] = None
@@ -622,6 +621,8 @@ def eval_slo(db: Session, model_id: int,
                 details={"violations": violations, "metric_id": mm.id},
             )
             db.add(alert_obj); db.commit(); db.refresh(alert_obj)
+            slo_alerts_total.labels(severity=worst_sev).inc()
+            alerts_created_total.labels(type="slo", severity=worst_sev).inc()
             record_audit(db, "ALERT_CREATED", model_id, None,
                          {"alert_id": alert_obj.id, "severity": worst_sev, "type": "slo"})
 

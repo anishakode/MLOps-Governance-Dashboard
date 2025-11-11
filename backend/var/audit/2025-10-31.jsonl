@@ -1,0 +1,4 @@
+{"id": 146, "action": "DQ_MISSING_EVALUATED", "model_id": 4, "actor": null, "details": {"feature": "zipcode_admin", "missing_rate": 0.22, "severity": "high", "metric_id": 58}, "created_at": "2025-10-31T20:12:21.684757"}
+{"id": 147, "action": "ALERT_CREATED", "model_id": 4, "actor": null, "details": {"alert_id": 31, "severity": "high", "feature": "zipcode_admin", "type": "dq"}, "created_at": "2025-10-31T20:12:21.835064"}
+{"id": 148, "action": "DQ_MISSING_EVALUATED", "model_id": 5, "actor": null, "details": {"feature": "zipcode", "missing_rate": 0.22, "severity": "high", "metric_id": 59}, "created_at": "2025-10-31T20:16:52.277509"}
+{"id": 149, "action": "ALERT_CREATED", "model_id": 5, "actor": null, "details": {"alert_id": 32, "severity": "high", "feature": "zipcode", "type": "dq"}, "created_at": "2025-10-31T20:16:52.303797"}
