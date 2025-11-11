@@ -18,9 +18,18 @@ jobs:
       DATABASE_URL: postgresql+psycopg2://mlops_user:mlops_pass@localhost:5432/mlops_governance
       JWT_SECRET: test-secret
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: { python-version: '3.11' }
-      - run: pip install -r requirements.txt
-      - run: ls -la
-      - run: pytest -q
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Run tests
+        run: pytest -q
+        env:
+          PYTHONPATH: .

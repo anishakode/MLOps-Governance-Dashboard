@@ -187,6 +187,7 @@ class AlertCommentIn(BaseModel):
 @app.get("/health")
 def health_check(db: Session = Depends(get_db)):
     try:
+        Base.metadata.create_all(bind=engine)
         # Test database connection
         models_count = db.query(ModelDB).count()
         tables = inspect(engine).get_table_names()
